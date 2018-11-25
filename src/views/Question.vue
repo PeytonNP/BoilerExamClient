@@ -65,12 +65,7 @@
 <script>
 import Multiselect from 'vue-multiselect'
 import Latex from '@/components/Latex'
-
-const QuestionStatus = Object.freeze({
-  draft: 0,
-  submitted: 1,
-  approved: 2,
-})
+import { Status } from '../models/question'
 
 export default {
   name: 'Question',
@@ -79,7 +74,7 @@ export default {
       title: '',
       content: '',
       tags: [],
-      status: QuestionStatus.draft,
+      status: Status.draft,
     },
     tags: ['Green Theorem', 'Vectors'],
   }),
@@ -92,7 +87,7 @@ export default {
   },
   computed: {
     freezed () {
-      return this.form.status === QuestionStatus.approved
+      return this.form.status === Status.approved
     },
   },
   components: {
