@@ -53,7 +53,7 @@
                         label-for="form-answer">
             <b-form-select id="form-answer"
                            :disabled="freezed"
-                           :options="form.options.map((option, index) => String.fromCharCode(65 + index) + '. ' + option)"
+                           :options="allOptions"
                            v-model="form.answer"/>
           </b-form-group>
           <b-form-group id="form-question-tags-group"
@@ -133,6 +133,13 @@ export default {
           .join('\n\n') +
         '</ol>'
     },
+    allOptions () {
+      const options = this.form.options
+        .map((option, index) => String.fromCharCode(65 + index) + '. ' + option)
+      const combinations = this.form.combinations
+        .map(combination => combination.map(index => String.fromCharCode(65 + index)).join(', '))
+      return [...options, ...combinations]
+    }
   },
   components: {
     Multiselect,
