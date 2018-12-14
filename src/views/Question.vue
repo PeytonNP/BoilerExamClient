@@ -14,29 +14,47 @@
                              :max-rows="6">
             </b-form-textarea>
           </b-form-group>
-          <b-form-group id="form-answer-group"
-                        label="Answer:"
-                        label-for="form-answer">
-            <b-form-input id="form-answer"
-                          type="text"
-                          :disabled="freezed"
-                          v-model="form.answer"/>
-          </b-form-group>
-          <b-form-group id="form-distractor-group"
-                        label="Distractors:">
-            <b-list-group v-if="form.distractors && form.distractors.length > 0">
-              <b-list-group-item v-for="(distractor, index) in form.distractors" :key="index">
-                <b-input-group>
+          <b-form-group id="form-options-group"
+                        label="Options:">
+            <b-list-group v-if="form.options && form.options.length > 0">
+              <b-list-group-item v-for="(option, index) in form.options" :key="index">
+                <b-input-group :prepend="String.fromCharCode(65 + index)" >
                   <b-form-input type="text"
+                                v-if="typeof option === 'string'"
                                 :disabled="freezed"
-                                v-model="form.distractors[index]"/>
+                                v-model="form.options[index]"/>
                   <b-input-group-append>
-                    <b-btn variant="danger" @click="form.distractors.splice(index, 1)">-</b-btn>
+                    <b-btn variant="danger" @click="form.options.splice(index, 1)">-</b-btn>
                   </b-input-group-append>
                 </b-input-group>
               </b-list-group-item>
             </b-list-group>
-            <b-btn variant="primary" class="my-2 float-right" @click="form.distractors.push('')">Add</b-btn>
+            <b-btn variant="primary" class="float-right my-2" @click="form.options.push('')">Add</b-btn>
+          </b-form-group>
+          <b-form-group id="form-combinations-group"
+                        label="Combinations:">
+            <b-list-group v-if="form.combinations && form.combinations.length > 0">
+              <b-list-group-item v-for="(combination, index) in form.combinations" :key="index">
+                <b-button-group class="btn-block">
+                  <b-btn
+                    class="col"
+                    v-for="(option, index) in form.options"
+                    @click="combination.includes(index) ? combination.splice(combination.indexOf(index), 1) : combination.push(index)"
+                    :variant="combination.includes(index) ? 'primary' : 'outline-secondary'"
+                    :key="index">{{String.fromCharCode(index + 65)}}</b-btn>
+                  <b-btn @click="form.combinations.splice(index, 1)">-</b-btn>
+                </b-button-group>
+              </b-list-group-item>
+            </b-list-group>
+            <b-btn variant="primary" class="float-right my-2" @click="form.combinations.push([])">Add</b-btn>
+          </b-form-group>
+          <b-form-group id="form-answer-group"
+                        label="Answer:"
+                        label-for="form-answer">
+            <b-form-select id="form-answer"
+                           :disabled="freezed"
+                           :options="form.options.map((option, index) => String.fromCharCode(65 + index) + '. ' + option)"
+                           v-model="form.answer"/>
           </b-form-group>
           <b-form-group id="form-question-tags-group"
                         label="Tags:"
@@ -85,8 +103,9 @@ export default {
   data: () => ({
     form: {
       content: '',
-      answer: '',
-      distractors: ['a'],
+      answer: null,
+      options: ['a'],
+      combinations: [],
       tags: [],
       status: Status.draft,
     },
@@ -104,10 +123,15 @@ export default {
       return this.form.status === Status.approved
     },
     questionContent () {
-      let options = this.form.distractors.slice(0)
-      options.unshift(this.form.answer)
-      options = options.map(answer => `<li>${answer}</li>`)
-      return this.form.content + '\n\n<ol type="A">' + options.join('\n\n') + '</ol>'
+      return this.form.content +
+        '\n\n<ol type="A">' +
+        this.form.options
+          .map(answer => `<li>${answer}</li>`)
+          .join('\n\n') +
+        this.form.combinations
+          .map(combination => `<li>${combination.map(a => String.fromCharCode(65 + a)).join(', ')}</li>`)
+          .join('\n\n') +
+        '</ol>'
     },
   },
   components: {
@@ -120,10 +144,19 @@ export default {
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 
 <style lang="scss">
-  #form-distractor-group .list-group .list-group-item {
+  #form-options-group .list-group .list-group-item {
     padding: 0;
     input.form-control {
       border-style: none;
     }
+    .input-group-text {
+      border-style: none;
+      border-radius: 0;
+      width: 2.25rem;
+      text-align: center;
+    }
+  }
+  #form-combinations-group .list-group .list-group-item {
+    padding: 0;
   }
 </style>
