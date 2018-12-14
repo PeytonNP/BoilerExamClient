@@ -3,16 +3,6 @@
     <b-row>
       <b-col md="6">
         <b-form>
-          <b-form-group id="form-title-group"
-                        label="Title:"
-                        label-for="form-title-input"
-                        description="An optional title for the question">
-            <b-form-input id="form-title-input"
-                          type="text"
-                          :disabled="freezed"
-                          v-model="form.title">
-            </b-form-input>
-          </b-form-group>
           <b-form-group id="form-question-content-group"
                         label="Question Content:"
                         label-for="form-question-content"
@@ -23,6 +13,30 @@
                              :rows="3"
                              :max-rows="6">
             </b-form-textarea>
+          </b-form-group>
+          <b-form-group id="form-answer-group"
+                        label="Answer:"
+                        label-for="form-answer">
+            <b-form-input id="form-answer"
+                          type="text"
+                          :disabled="freezed"
+                          v-model="form.answer"/>
+          </b-form-group>
+          <b-form-group id="form-distractor-group"
+                        label="Distractors:">
+            <b-list-group v-if="form.distractors && form.distractors.length > 0">
+              <b-list-group-item v-for="(distractor, index) in form.distractors" :key="index">
+                <b-input-group>
+                  <b-form-input type="text"
+                                :disabled="freezed"
+                                v-model="form.distractors[index]"/>
+                  <b-input-group-append>
+                    <b-btn variant="danger" @click="form.distractors.splice(index, 1)">-</b-btn>
+                  </b-input-group-append>
+                </b-input-group>
+              </b-list-group-item>
+            </b-list-group>
+            <b-btn variant="primary" class="my-2 float-right" @click="form.distractors.push('')">Add</b-btn>
           </b-form-group>
           <b-form-group id="form-question-tags-group"
                         label="Tags:"
@@ -54,9 +68,8 @@
         </b-form>
       </b-col>
       <b-col
-        md="6"
-        class="d-flex flex-column justify-content-center align-items-center">
-        <latex :value="form.content" />
+        md="6">
+        <latex :value="questionContent" />
       </b-col>
     </b-row>
   </b-container>
@@ -71,8 +84,9 @@ export default {
   name: 'Question',
   data: () => ({
     form: {
-      title: '',
       content: '',
+      answer: '',
+      distractors: ['a'],
       tags: [],
       status: Status.draft,
     },
@@ -89,6 +103,12 @@ export default {
     freezed () {
       return this.form.status === Status.approved
     },
+    questionContent () {
+      let options = this.form.distractors.slice(0)
+      options.unshift(this.form.answer)
+      options = options.map(answer => `<li>${answer}</li>`)
+      return this.form.content + '\n\n<ol type="A">' + options.join('\n\n') + '</ol>'
+    },
   },
   components: {
     Multiselect,
@@ -99,8 +119,11 @@ export default {
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 
-<style>
-  #question-preview {
-    max-height: 100vh;
+<style lang="scss">
+  #form-distractor-group .list-group .list-group-item {
+    padding: 0;
+    input.form-control {
+      border-style: none;
+    }
   }
 </style>
