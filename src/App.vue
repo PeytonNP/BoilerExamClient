@@ -5,7 +5,8 @@
       <b-navbar-brand :to="{ name: 'home' }">BoilerExam</b-navbar-brand>
       <b-collapse is-nav id="nav-collapse">
         <b-navbar-nav>
-          <b-nav-item  :to="{ name: 'library' }">Library</b-nav-item>
+          <b-nav-item :to="{ name: 'library' }">Library</b-nav-item>
+          <b-nav-item :to="{ name: 'exams' }">Exams</b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>

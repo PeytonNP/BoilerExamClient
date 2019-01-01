@@ -4,7 +4,14 @@
       <b-col md="3">
         <b-card header="Card Title">
           <p class="card-text">
-            This is where the filters go
+            <multiselect
+              id="form-question-tags"
+              v-model="filters.tags"
+              :options="tags"
+              multiple
+              searchable
+              :disabled="freezed"
+              @search-change="searchTags"/>
           </p>
         </b-card>
       </b-col>
@@ -35,6 +42,7 @@
 </template>
 
 <script>
+import Multiselect from 'vue-multiselect'
 import { Status } from '../models/question'
 
 export default {
@@ -67,7 +75,10 @@ export default {
     filters: {
       tags: [],
     }
-  })
+  }),
+  components: {
+    Multiselect,
+  }
 }
 </script>
 
