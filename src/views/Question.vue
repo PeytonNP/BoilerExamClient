@@ -34,26 +34,35 @@
           <b-form-group id="form-combinations-group"
                         label="Combinations:">
             <b-list-group v-if="form.combinations && form.combinations.length > 0">
-              <b-list-group-item v-for="(combination, index) in form.combinations" :key="index">
-                <b-button-group class="btn-block">
-                  <b-btn
-                    class="col"
+              <b-list-group-item v-for="(combination, i) in form.combinations" :key="i">
+                <b-nav fill pills>
+                  <b-nav-item
                     v-for="(option, index) in form.options"
-                    @click="combination.includes(index) ? combination.splice(combination.indexOf(index), 1) : combination.push(index)"
-                    :variant="combination.includes(index) ? 'primary' : 'outline-secondary'"
-                    :key="index">{{String.fromCharCode(index + 65)}}</b-btn>
-                  <b-btn @click="form.combinations.splice(index, 1)">-</b-btn>
-                </b-button-group>
+                    :key="index"
+                    :active="combinationOptionActive(combination, index)"
+                    @click="toggleCombination(combination, index)"
+                  >
+                    {{String.fromCharCode(index + 65)}}
+                  </b-nav-item>
+                </b-nav>
               </b-list-group-item>
             </b-list-group>
-            <b-btn variant="primary" class="float-right my-2" @click="form.combinations.push([])">Add</b-btn>
+            <b-btn-group class="float-right my-2">
+              <b-btn variant="success"  @click="form.combinations = []" v-if="form.combinations === null">Enable</b-btn>
+              <template v-else>
+                <b-btn variant="primary" @click="form.combinations.push([])">Add</b-btn>
+                <b-btn variant="danger" @click="form.combinations = null">Disable</b-btn>
+              </template>
+            </b-btn-group>
           </b-form-group>
           <b-form-group id="form-answer-group"
                         label="Answer:"
                         label-for="form-answer">
             <b-form-select id="form-answer"
                            :disabled="freezed"
-                           :options="allOptions"
+                           :options="answerSelections"
+                           value-field="index"
+                           text-field="text"
                            v-model="form.answer"/>
           </b-form-group>
           <b-form-group id="form-question-tags-group"
@@ -64,6 +73,8 @@
               id="form-question-tags"
               v-model="form.tags"
               :options="tags"
+              label="title"
+              trackBy="id"
               multiple
               searchable
               :disabled="freezed"
@@ -87,7 +98,7 @@
       </b-col>
       <b-col
         md="6">
-        <latex :value="questionContent" />
+        <question-preview :value="form" />
       </b-col>
     </b-row>
   </b-container>
@@ -95,18 +106,18 @@
 
 <script>
 import Multiselect from 'vue-multiselect'
-import Latex from '@/components/Latex'
+import QuestionPreview from '@/components/QuestionPreview'
 import { Status } from '../models/question'
 import client from '@/utils/client'
-
+import { IndexToLetter } from '@/utils'
 export default {
   name: 'Question',
   data: () => ({
     form: {
       content: '',
       answer: null,
-      options: ['a'],
-      combinations: [],
+      options: [],
+      combinations: null,
       tags: [],
       status: Status.draft,
     },
@@ -115,10 +126,8 @@ export default {
   mounted () {
     client.get('/questions/' + this.questionID)
       .then(response => {
-        const question = response.data
-        this.form.content = question.content
-        this.answer = question.answer
-        this.tags = question.tags
+        this.form = response.data
+        console.log(this.form)
       })
   },
   methods: {
@@ -127,36 +136,51 @@ export default {
     searchTags () {
       // async find the appropriate tags
     },
+    combinationOptionActive (combination, index) {
+      return combination.includes(index)
+    },
+    toggleCombination (combination, index) {
+      if (this.combinationOptionActive(combination, index)) { combination.splice(combination.indexOf(index), 1) } else { combination.push(index) }
+    }
   },
   computed: {
     freezed () {
       return this.form.status === Status.approved
     },
-    questionContent () {
-      return this.form.content +
-        '\n\n<ol type="A">' +
-        this.form.options
-          .map(answer => `<li>${answer}</li>`)
-          .join('\n\n') +
-        this.form.combinations
-          .map(combination => `<li>${combination.map(a => String.fromCharCode(65 + a)).join(', ')}</li>`)
-          .join('\n\n') +
-        '</ol>'
-    },
-    allOptions () {
-      const options = this.form.options
-        .map((option, index) => String.fromCharCode(65 + index) + '. ' + option)
-      const combinations = this.form.combinations
-        .map(combination => combination.map(index => String.fromCharCode(65 + index)).join(', '))
-      return [...options, ...combinations]
+    answerSelections () {
+      if (this.form.combinations === null) {
+        return this.form.options.map((option, index) => ({
+          text: IndexToLetter(index) + '. ' + option,
+          index: index,
+          type: 'options'
+        }))
+      } else {
+        return this.form.combinations.map((combination, index) => {
+          const selection = {
+            index: index,
+            type: 'combinations'
+          }
+          if (combination.length === 0) {
+            selection.text = 'None'
+          } else {
+            selection.text = combination.map(index => IndexToLetter(index)).join(', ')
+          }
+          return selection
+        })
+      }
     },
     questionID () {
       return parseInt(this.$route.params.questionID)
     }
   },
+  watch: {
+    'form.answer' (value) {
+      console.log(value)
+    }
+  },
   components: {
     Multiselect,
-    Latex,
+    QuestionPreview,
   }
 }
 </script>

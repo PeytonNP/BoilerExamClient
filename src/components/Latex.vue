@@ -26,11 +26,9 @@ function renderLatex (content, mode, errors) {
       displayMode: mode !== 0
     })
     if (mode === 1) {
-      console.log(renderedContent)
       renderedContent = renderedContent.replace(
         /<span class="katex-display">(.*)<\/span>/gs,
         '<span class="katex-display inline-block">$1</span>')
-      console.log(renderedContent)
     }
     return renderedContent
   } catch (e) {
