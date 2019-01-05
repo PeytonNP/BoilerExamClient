@@ -17,4 +17,6 @@
 <style lang="scss">
 @import '~bootstrap/scss/bootstrap.scss';
 @import '~bootstrap-vue/dist/bootstrap-vue.css';
+
+@import '~vue-multiselect/dist/vue-multiselect.min.css';
 </style>

@@ -4,23 +4,16 @@
       <b-col md="3">
         <b-card header="Card Title">
           <p class="card-text">
-            <multiselect
-              id="form-question-tags"
-              v-model="filters.tags"
-              :options="tags"
-              multiple
-              searchable
-              :disabled="freezed"
-              @search-change="searchTags"/>
+            This is where the filter goes
           </p>
         </b-card>
       </b-col>
       <b-col md="9">
-        <b-list-group>
+        <b-list-group v-if="questions">
           <b-list-group-item
             v-for="question in questions"
             :key="question.id"
-            :to="{ name: 'question', params: { questionID: 'a' }}">
+            :to="{ name: 'question', params: { questionID: question.id }}">
             <div class="d-flex w-100 justify-content-between">
               <h5 class="mb-1" v-text="question.title" />
               <small>3 days ago</small>
@@ -29,13 +22,18 @@
             <div class="library-badge-container">
               <b-badge
                 v-for="tag in question.tags"
-                :key="tag"
+                :key="tag.id"
                 :variant="filters.tags && filters.tags.length > 0 ? filters.tags.contains(tag) : 'primary'">
-                {{ tag }}
+                {{ tag.title }}
               </b-badge>
             </div>
           </b-list-group-item>
         </b-list-group>
+        <b-pagination
+          size="md"
+          :total-rows="pagination.totalQuestionCount"
+          v-model="pagination.page"
+          :per-page="pagination.perpage"/>
       </b-col>
     </b-row>
   </b-container>
@@ -44,38 +42,45 @@
 <script>
 import Multiselect from 'vue-multiselect'
 import { Status } from '../models/question'
+import client from '@/utils/client'
 
 export default {
   name: 'Library',
   data: () => ({
-    questions: [
-      {
-        id: 0,
-        title: 'Question 1',
-        content: 'Some Latex Content',
-        tags: ['Vector', 'Green Theorem'],
-        status: Status.draft,
-      },
-      {
-        id: 1,
-        title: 'Question 2',
-        content: 'Some Latex Content',
-        tags: ['Vector', 'Green Theorem'],
-        status: Status.submitted,
-      },
-      {
-        id: 2,
-        title: 'Question 3',
-        content: 'Some Latex Content',
-        tags: ['Vector', 'Green Theorem'],
-        status: Status.approved,
-      },
-    ],
-    page: 0,
+    questions: null,
+    pagination: {
+      page: 1,
+      totalPageCount: null,
+      totalQuestionCount: null,
+      perpage: 15,
+    },
     filters: {
       tags: [],
     }
   }),
+  methods: {
+    loadPage (page) {
+      client.get('/questions', {
+        params: {
+          page: this.pagination.page,
+          pageSize: this.pagination.perpage
+        }
+      })
+        .then(response => {
+          this.questions = response.data
+          this.pagination.totalPageCount = parseInt(response.headers['x-total-page-count'])
+          this.pagination.totalQuestionCount = parseInt(response.headers['x-total-count'])
+        })
+    }
+  },
+  mounted () {
+    this.loadPage(this.pagination.page)
+  },
+  watch: {
+    'pagination.page' (page) {
+      this.loadPage(page)
+    }
+  },
   components: {
     Multiselect,
   }

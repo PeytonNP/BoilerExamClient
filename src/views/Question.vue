@@ -97,6 +97,7 @@
 import Multiselect from 'vue-multiselect'
 import Latex from '@/components/Latex'
 import { Status } from '../models/question'
+import client from '@/utils/client'
 
 export default {
   name: 'Question',
@@ -111,6 +112,15 @@ export default {
     },
     tags: ['Green Theorem', 'Vectors'],
   }),
+  mounted () {
+    client.get('/questions/' + this.questionID)
+      .then(response => {
+        const question = response.data
+        this.form.content = question.content
+        this.answer = question.answer
+        this.tags = question.tags
+      })
+  },
   methods: {
     onSubmit () {
     },
@@ -139,6 +149,9 @@ export default {
       const combinations = this.form.combinations
         .map(combination => combination.map(index => String.fromCharCode(65 + index)).join(', '))
       return [...options, ...combinations]
+    },
+    questionID () {
+      return parseInt(this.$route.params.questionID)
     }
   },
   components: {
@@ -147,8 +160,6 @@ export default {
   }
 }
 </script>
-
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 
 <style lang="scss">
   #form-options-group .list-group .list-group-item {

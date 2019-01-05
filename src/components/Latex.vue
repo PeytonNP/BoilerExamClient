@@ -9,7 +9,9 @@
 
 <script>
 import katex from 'katex/dist/katex.mjs'
-import marked from 'marked'
+import showdown from 'showdown'
+
+const converter = new showdown.Converter()
 
 /**
  * Render content into latex
@@ -24,9 +26,11 @@ function renderLatex (content, mode, errors) {
       displayMode: mode !== 0
     })
     if (mode === 1) {
+      console.log(renderedContent)
       renderedContent = renderedContent.replace(
-        /<span class="katex-display">(.*)<\/span>/g,
+        /<span class="katex-display">(.*)<\/span>/gs,
         '<span class="katex-display inline-block">$1</span>')
+      console.log(renderedContent)
     }
     return renderedContent
   } catch (e) {
@@ -58,17 +62,17 @@ export default {
   watch: {
     value () {
       let previewErrors = []
-      this.preview = marked(this.value)
-        .replace(
-          /(?:<|&lt;)\$([^$]+)\$(?:>|&gt;)/g,
-          (match, content) => renderLatex(content, 0, previewErrors)
+      this.preview = this.value
+        .replace( // inline block mode
+          /\${3}([^$]+)\${3}/g,
+          (match, content) => renderLatex(content, 2, previewErrors)
         )
         .replace(
-          /(?:<|&lt;)\${2}([^$]+)\${2}(?:>|&gt;)/g,
+          /\${2}([^$]+)\${2}/g,
           (match, content) => renderLatex(content, 1, previewErrors))
-        .replace( // inline block mode
-          /(?:<|&lt;)\${3}([^$]+)\${3}(?:>|&gt;)/g,
-          (match, content) => renderLatex(content, 2, previewErrors)
+        .replace(
+          /\$([^$]+)\$/g,
+          (match, content) => renderLatex(content, 0, previewErrors)
         )
       this.previewErrors = previewErrors
         .map(error => error.message.replace('KaTeX parse error: ', ''))
