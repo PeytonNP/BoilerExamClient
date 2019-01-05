@@ -69,16 +69,9 @@
                         label="Tags:"
                         label-for="form-question-tags"
                         description="The Tags for this question">
-            <multiselect
+            <tag-selection
               id="form-question-tags"
-              v-model="form.tags"
-              :options="tags"
-              label="title"
-              trackBy="id"
-              multiple
-              searchable
-              :disabled="freezed"
-              @search-change="searchTags"/>
+              v-model="form.tags"/>
           </b-form-group>
           <b-button-group>
             <b-button
@@ -105,7 +98,7 @@
 </template>
 
 <script>
-import Multiselect from 'vue-multiselect'
+import TagSelection from '@/components/TagSelection'
 import QuestionPreview from '@/components/QuestionPreview'
 import { Status } from '../models/question'
 import client from '@/utils/client'
@@ -179,7 +172,7 @@ export default {
     }
   },
   components: {
-    Multiselect,
+    TagSelection,
     QuestionPreview,
   }
 }

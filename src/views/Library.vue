@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import Multiselect from 'vue-multiselect'
+import TagSelection from '@/components/TagSelection'
 import { Status } from '../models/question'
 import client from '@/utils/client'
 
@@ -82,7 +82,7 @@ export default {
     }
   },
   components: {
-    Multiselect,
+    TagSelection,
   }
 }
 </script>
