@@ -50,6 +50,7 @@ export default {
   props: {
     value: String,
     inline: Boolean,
+    markdown: Boolean,
   },
   data: () => ({
     preview: '',
@@ -61,7 +62,7 @@ export default {
   methods: {
     render () {
       let previewErrors = []
-      this.preview = this.value
+      const preview = this.value
         .replace( // inline block mode
           /\${3}([^$]+)\${3}/g,
           (match, content) => renderLatex(content, this.inline ? 0 : 2, previewErrors)
@@ -73,7 +74,7 @@ export default {
           /\$([^$]+)\$/g,
           (match, content) => renderLatex(content, 0, previewErrors)
         )
-      this.preview = converter.makeHtml(this.preview)
+      this.preview = this.markdown ? converter.makeHtml(preview) : preview
       this.previewErrors = previewErrors
         .map(error => error.message.replace('KaTeX parse error: ', ''))
     }
