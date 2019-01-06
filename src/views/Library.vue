@@ -4,7 +4,7 @@
       <b-col md="3">
         <b-card header="Card Title">
           <p class="card-text">
-            This is where the filter goes
+            <tag-selection v-model="filters.tags"></tag-selection>
           </p>
         </b-card>
       </b-col>
@@ -23,7 +23,7 @@
               <b-badge
                 v-for="tag in question.tags"
                 :key="tag.id"
-                :variant="filters.tags && filters.tags.length > 0 ? filters.tags.contains(tag) : 'primary'">
+                :variant="filters.tags && filters.tags.some(t => t.id === tag.id) ? 'primary' : 'secondary'">
                 {{ tag.title }}
               </b-badge>
             </div>
@@ -60,11 +60,14 @@ export default {
   }),
   methods: {
     loadPage (page) {
+      const params = new URLSearchParams()
+      params.append('page', this.pagination.page)
+      params.append('pageSize', this.pagination.perpage)
+      if (this.filters.tags && this.filters.tags.length > 0) {
+        params.append('tags', this.filters.tags.map(tag => tag.id).join(','))
+      }
       client.get('/questions', {
-        params: {
-          page: this.pagination.page,
-          pageSize: this.pagination.perpage
-        }
+        params: params
       })
         .then(response => {
           this.questions = response.data
@@ -79,6 +82,10 @@ export default {
   watch: {
     'pagination.page' (page) {
       this.loadPage(page)
+    },
+    'filters.tags' (tags) {
+      this.pagination.page = 1
+      this.loadPage(1)
     }
   },
   components: {
