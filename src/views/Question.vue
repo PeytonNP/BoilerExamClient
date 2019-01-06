@@ -2,7 +2,7 @@
   <b-container class="py-4">
     <b-row>
       <b-col md="6">
-        <b-form>
+        <b-form v-if="form">
           <b-form-group id="form-question-content-group"
                         label="Question Content:"
                         label-for="form-question-content"
@@ -85,6 +85,7 @@
               :disabled="freezed"
             ><i class="fas fa-save mr-2"></i>Save</b-button>
             <b-button
+              @click="onDelete"
               variant="danger"
               :disabled="freezed"
               ><i class="fas fa-trash mr-2"></i>Delete</b-button>
@@ -93,7 +94,7 @@
       </b-col>
       <b-col
         md="6">
-        <question-preview :value="form" />
+        <question-preview v-if="form" :value="form" />
       </b-col>
     </b-row>
   </b-container>
@@ -108,14 +109,7 @@ import { IndexToLetter } from '@/utils'
 export default {
   name: 'Question',
   data: () => ({
-    form: {
-      content: '',
-      answer: null,
-      options: [],
-      combinations: null,
-      tags: [],
-      status: Status.draft,
-    },
+    form: null,
   }),
   mounted () {
     client.get('/questions/' + this.questionID)
@@ -128,11 +122,11 @@ export default {
     onSave () {
       const data = Object.assign({}, this.form)
       data.tags = data.tags.map(tag => tag.id)
-      console.log(data)
       client.put('/questions/' + this.questionID, data)
     },
-    searchTags () {
-      // async find the appropriate tags
+    onDelete () {
+      client.delete('/questions/' + this.questionID)
+      this.$router.back()
     },
     combinationOptionActive (combination, index) {
       return combination.includes(index)

@@ -55,7 +55,7 @@ export default {
     }
   }),
   methods: {
-    loadPage (page) {
+    loadPage () {
       const params = new URLSearchParams()
       params.append('page', this.pagination.page)
       params.append('pageSize', this.pagination.perpage)
@@ -73,7 +73,7 @@ export default {
     }
   },
   mounted () {
-    this.loadPage(this.pagination.page)
+    this.loadPage()
   },
   watch: {
     'pagination.page' (page) {
