@@ -14,11 +14,7 @@
             v-for="question in questions"
             :key="question.id"
             :to="{ name: 'question', params: { questionID: question.id }}">
-            <div class="d-flex w-100 justify-content-between">
-              <h5 class="mb-1" v-text="question.title" />
-              <small>3 days ago</small>
-            </div>
-            <p class="mb-1" v-text="question.content"/>
+            <latex inline class="mb-1" :value="question.content"/>
             <div class="library-badge-container">
               <b-badge
                 v-for="tag in question.tags"
@@ -41,7 +37,7 @@
 
 <script>
 import TagSelection from '@/components/TagSelection'
-import { Status } from '../models/question'
+import Latex from '@/components/Latex'
 import client from '@/utils/client'
 
 export default {
@@ -90,6 +86,7 @@ export default {
   },
   components: {
     TagSelection,
+    Latex
   }
 }
 </script>

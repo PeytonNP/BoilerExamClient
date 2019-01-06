@@ -48,26 +48,27 @@ function renderLatex (content, mode, errors) {
 export default {
   name: 'latex',
   props: {
-    value: {
-      type: String,
-      required: true
-    }
+    value: String,
+    inline: Boolean,
   },
   data: () => ({
     preview: '',
     previewErrors: [],
   }),
-  watch: {
-    value () {
+  mounted () {
+    this.render()
+  },
+  methods: {
+    render () {
       let previewErrors = []
       this.preview = this.value
         .replace( // inline block mode
           /\${3}([^$]+)\${3}/g,
-          (match, content) => renderLatex(content, 2, previewErrors)
+          (match, content) => renderLatex(content, this.inline ? 0 : 2, previewErrors)
         )
         .replace(
           /\${2}([^$]+)\${2}/g,
-          (match, content) => renderLatex(content, 1, previewErrors))
+          (match, content) => renderLatex(content, this.inline ? 0 : 1, previewErrors))
         .replace(
           /\$([^$]+)\$/g,
           (match, content) => renderLatex(content, 0, previewErrors)
@@ -75,6 +76,11 @@ export default {
       this.preview = converter.makeHtml(this.preview)
       this.previewErrors = previewErrors
         .map(error => error.message.replace('KaTeX parse error: ', ''))
+    }
+  },
+  watch: {
+    value () {
+      this.render()
     }
   }
 }

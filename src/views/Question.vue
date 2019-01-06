@@ -24,12 +24,14 @@
                                 :disabled="freezed"
                                 v-model="form.options[index]"/>
                   <b-input-group-append>
-                    <b-btn variant="danger" @click="form.options.splice(index, 1)">-</b-btn>
+                    <b-btn variant="danger" @click="form.options.splice(index, 1)">
+                      <i class="fas fa-minus"></i>
+                    </b-btn>
                   </b-input-group-append>
                 </b-input-group>
               </b-list-group-item>
             </b-list-group>
-            <b-btn variant="primary" class="float-right my-2" @click="form.options.push('')">Add</b-btn>
+            <b-btn variant="primary" class="float-right my-2" @click="form.options.push('')"><i class="fas fa-plus mr-2"></i>Add</b-btn>
           </b-form-group>
           <b-form-group id="form-combinations-group"
                         label="Combinations:">
@@ -44,14 +46,17 @@
                   >
                     {{String.fromCharCode(index + 65)}}
                   </b-nav-item>
+                  <b-btn variant="danger" @click="form.combinations.splice(index, 1)">
+                    <i class="fas fa-minus"></i>
+                  </b-btn>
                 </b-nav>
               </b-list-group-item>
             </b-list-group>
             <b-btn-group class="float-right my-2">
-              <b-btn variant="success"  @click="toggleMode(true)" v-if="form.combinations === null">Enable</b-btn>
+              <b-btn variant="success"  @click="toggleMode(true)" v-if="form.combinations === null"><i class="fas fa-plus-square mr-2"></i>Enable</b-btn>
               <template v-else>
-                <b-btn variant="primary" @click="form.combinations.push([])">Add</b-btn>
-                <b-btn variant="danger" @click="toggleMode(false)">Disable</b-btn>
+                <b-btn variant="primary" @click="form.combinations.push([])"><i class="fas fa-plus mr-2"></i>Add</b-btn>
+                <b-btn variant="danger" @click="toggleMode(false)"><i class="fas fa-ban mr-2"></i>Disable</b-btn>
               </template>
             </b-btn-group>
           </b-form-group>
@@ -78,11 +83,11 @@
               @click="onSave"
               variant="primary"
               :disabled="freezed"
-            >Save</b-button>
+            ><i class="fas fa-save mr-2"></i>Save</b-button>
             <b-button
               variant="danger"
               :disabled="freezed"
-              >Delete</b-button>
+              ><i class="fas fa-trash mr-2"></i>Delete</b-button>
           </b-button-group>
         </b-form>
       </b-col>

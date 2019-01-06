@@ -19,4 +19,6 @@
 @import '~bootstrap-vue/dist/bootstrap-vue.css';
 
 @import './styles/multiselect';
+
+@import '~@fortawesome/fontawesome-free/css/all.css';
 </style>
