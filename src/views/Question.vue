@@ -48,10 +48,10 @@
               </b-list-group-item>
             </b-list-group>
             <b-btn-group class="float-right my-2">
-              <b-btn variant="success"  @click="form.combinations = []" v-if="form.combinations === null">Enable</b-btn>
+              <b-btn variant="success"  @click="toggleMode(true)" v-if="form.combinations === null">Enable</b-btn>
               <template v-else>
                 <b-btn variant="primary" @click="form.combinations.push([])">Add</b-btn>
-                <b-btn variant="danger" @click="form.combinations = null">Disable</b-btn>
+                <b-btn variant="danger" @click="toggleMode(false)">Disable</b-btn>
               </template>
             </b-btn-group>
           </b-form-group>
@@ -75,11 +75,8 @@
           </b-form-group>
           <b-button-group>
             <b-button
-              @click="onSubmit()"
+              @click="onSave"
               variant="primary"
-              :disabled="freezed">Submit</b-button>
-            <b-button
-              variant="secondary"
               :disabled="freezed"
             >Save</b-button>
             <b-button
@@ -114,7 +111,6 @@ export default {
       tags: [],
       status: Status.draft,
     },
-    tags: ['Green Theorem', 'Vectors'],
   }),
   mounted () {
     client.get('/questions/' + this.questionID)
@@ -124,13 +120,30 @@ export default {
       })
   },
   methods: {
-    onSubmit () {
+    onSave () {
+      const data = Object.assign({}, this.form)
+      data.tags = data.tags.map(tag => tag.id)
+      console.log(data)
+      client.put('/questions/' + this.questionID, data)
     },
     searchTags () {
       // async find the appropriate tags
     },
     combinationOptionActive (combination, index) {
       return combination.includes(index)
+    },
+    /**
+     * Switch between combination mode and option mode
+     * @param {boolean}mode true for combination and false for option
+     */
+    toggleMode (mode) {
+      this.form.answer = 0
+      if (mode) {
+        this.form.combinations = this.modeBuffer || []
+      } else {
+        this.modeBuffer = this.form.combinations
+        this.form.combinations = null
+      }
     },
     toggleCombination (combination, index) {
       if (this.combinationOptionActive(combination, index)) { combination.splice(combination.indexOf(index), 1) } else { combination.push(index) }
@@ -192,6 +205,9 @@ export default {
     }
   }
   #form-combinations-group .list-group .list-group-item {
-    padding: 0;
+    padding: 0.3rem;
+    .nav .nav-item{
+      margin: 0.2rem;
+    }
   }
 </style>

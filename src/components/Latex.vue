@@ -72,6 +72,7 @@ export default {
           /\$([^$]+)\$/g,
           (match, content) => renderLatex(content, 0, previewErrors)
         )
+      this.preview = converter.makeHtml(this.preview)
       this.previewErrors = previewErrors
         .map(error => error.message.replace('KaTeX parse error: ', ''))
     }
