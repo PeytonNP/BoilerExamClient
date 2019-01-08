@@ -2,7 +2,12 @@
   <b-container class="py-4">
     <b-row>
       <b-col md="3">
-        <b-card header="Card Title">
+        <b-card header="Actions">
+          <p class="card-text">
+            <b-btn @click="addQuestion">Add Question</b-btn>
+          </p>
+        </b-card>
+        <b-card header="Filters">
           <p class="card-text">
             <tag-selection v-model="filters.tags"></tag-selection>
           </p>
@@ -69,6 +74,19 @@ export default {
           this.questions = response.data
           this.pagination.totalPageCount = parseInt(response.headers['x-total-page-count'])
           this.pagination.totalQuestionCount = parseInt(response.headers['x-total-count'])
+        })
+    },
+    addQuestion () {
+      client.post('/questions', {
+        options: ['Default Option'],
+      })
+        .then(response => {
+          this.$router.push({
+            name: 'question',
+            params: {
+              questionID: response.data.id
+            }
+          })
         })
     }
   },
