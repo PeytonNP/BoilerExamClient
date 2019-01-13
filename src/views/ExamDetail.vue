@@ -18,8 +18,6 @@
             <b-form-textarea id="des-input" v-model="form.description"/>
           </b-form-group>
         </b-form>
-      </b-col>
-      <b-col>
         <b-list-group>
           <b-list-group-item v-if="form.examQuestions.length === 0">
             The list is empty
@@ -46,11 +44,17 @@
         </b-list-group>
         <b-btn class="float-right my-3" variant="primary" @click="addQuestions">Add</b-btn>
       </b-col>
+      <b-col>
+        <b-card no-body header="Statistics">
+          <canvas class="card-img-top" ref="stat-chart"/>
+        </b-card>
+      </b-col>
     </b-row>
   </b-container>
 </template>
 
 <script>
+import Chart from 'chart.js'
 import QuestionListItem from '@/components/QuestionListItem'
 export default {
   name: 'ExamDetail',
@@ -69,6 +73,30 @@ export default {
     } else {
       // fetch from server
     }
+
+    const tagMap = new Map()
+    this.form.examQuestions.forEach(examQuestion => {
+      examQuestion.question.tags.forEach(tag => {
+        const key = tag.title
+        if (!tagMap.has(key)) {
+          tagMap.set(key, 1)
+        } else {
+          tagMap.set(key, tagMap.get(key) + 1)
+        }
+      })
+    })
+    new Chart(this.$refs['stat-chart'], {
+      data: {
+        datasets: [{
+          data: Array.from(tagMap.values()),
+          backgroundColor: Array.from({ length: tagMap.size }, () => randomColor()),
+        }],
+
+        // These labels appear in the legend and in the tooltips when hovering different arcs
+        labels:  Array.from(tagMap.keys())
+      },
+      type: 'polarArea',
+    })
   },
   methods: {
     addQuestions () {
@@ -90,6 +118,10 @@ export default {
   components: {
     QuestionListItem,
   }
+}
+
+function randomColor () {
+  return `rgb(${Array.from({ length: 3 }, () => Math.round(Math.random() * 255))})`
 }
 </script>
 
