@@ -22,36 +22,54 @@
           <b-list-group-item v-if="form.examQuestions.length === 0">
             The list is empty
           </b-list-group-item>
-          <question-list-item
-            v-for="(examQuestion, index) in form.examQuestions"
-            :question="examQuestion.question"
-            :key="examQuestion.question.id">
-            <div slot="actions" @click.stop.prevent class="mt-3">
-              <b-form-group horizontal
-                            class="d-inline my-0"
-                            :label-cols="2"
-                            label-size="sm"
-                            label="Points">
-                <b-input type="number" v-model.number="examQuestion.points" size="sm"></b-input>
-              </b-form-group>
-              <b-btn
-                size="sm"
-                class="float-right"
-                @click="removeExamQuestion(index)"
-                variant="danger">Delete</b-btn>
-            </div>
-          </question-list-item>
+          <draggable v-model="form.examQuestions" :options="{ animation: 150 }" >
+            <question-list-item
+              v-for="(examQuestion, index) in form.examQuestions"
+              :question="examQuestion.question"
+              :key="examQuestion.question.id">
+              <div slot="actions" @click.stop.prevent class="mt-3">
+                <b-form-group horizontal
+                              class="d-inline my-0"
+                              label-size="sm"
+                              label="Points">
+                  <b-input type="number" v-model.number="examQuestion.points" size="sm"></b-input>
+                </b-form-group>
+                <b-btn
+                  size="sm"
+                  class="float-right"
+                  @click="removeExamQuestion(index)"
+                  variant="danger">Delete</b-btn>
+              </div>
+            </question-list-item>
+          </draggable>
         </b-list-group>
         <b-btn class="float-right my-3" variant="primary" @click="addQuestions">Add</b-btn>
       </b-col>
       <b-col>
-        <b-card no-body header="Statistics">
+        <b-card no-body header="Statistics" class="my-3">
           <canvas class="card-img-top" ref="stat-chart"/>
           <b-list-group flush>
             <b-list-group-item>
               Total Score: {{form.examQuestions.map(examQuestion => examQuestion.points).reduce((x, y) => x + y, 0)}}
             </b-list-group-item>
           </b-list-group>
+        </b-card>
+        <b-card no-body header="Publish" class="my-3">
+          <b-list-group flush>
+            <b-list-group-item>
+              Version A
+            </b-list-group-item>
+          </b-list-group>
+          <b-card-body>
+            <b-form class="card-text">
+              <b-form-group horizontal
+                            label-size="sm"
+                            label="Versions">
+                <b-input type="number" size="sm"></b-input>
+              </b-form-group>
+              <b-btn variant="primary" class="float-right">Publish</b-btn>
+            </b-form>
+          </b-card-body>
         </b-card>
       </b-col>
     </b-row>
@@ -60,6 +78,7 @@
 
 <script>
 import Chart from 'chart.js'
+import draggable from 'vuedraggable'
 import QuestionListItem from '@/components/QuestionListItem'
 export default {
   name: 'ExamDetail',
@@ -121,6 +140,7 @@ export default {
   },
   components: {
     QuestionListItem,
+    draggable,
   }
 }
 

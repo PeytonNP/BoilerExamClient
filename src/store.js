@@ -11,13 +11,13 @@ export default new Vuex.Store({
     editExam (state, exam) {
       state.editingExam = exam
     },
-    addExamQuestion (state, question) {
+    addExamQuestion (state, { element, newIndex }) {
       if (!state.editingExam) {
         return
       }
-      state.editingExam.examQuestions.push({
+      state.editingExam.examQuestions.splice(newIndex, 0, {
         points: 10,
-        question: question
+        question: element
       })
     },
     removeExamQuestion (state, index) {

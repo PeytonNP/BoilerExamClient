@@ -3,20 +3,13 @@
     <b-row>
       <b-col md="7">
         <b-list-group v-if="questions">
-          <question-list-item
-            v-for="question in questions"
-            :question="question"
-            :key="question.id">
-            <b-btn
-              v-if="editingExam"
-              slot="action-btn"
-              size="sm"
-              variant="outline-primary"
-              class="float-right"
-              @click.prevent="addExamQuestion(question)">
-              Add<i class="fas fa-angle-double-right ml-1"></i>
-            </b-btn>
-          </question-list-item>
+          <draggable v-model="questions" :options="{ animation: 150, group: 'question', sort: false }" >
+            <question-list-item
+              v-for="question in questions"
+              :question="question"
+              :key="question.id">
+            </question-list-item>
+          </draggable>
         </b-list-group>
         <b-pagination
           class="my-3 justify-content-center"
@@ -47,20 +40,17 @@
               </p>
             </b-card-body>
             <b-list-group flush>
-              <b-list-group-item v-if="editingExam.examQuestions.length === 0">
-                The list is empty
-              </b-list-group-item>
-              <question-list-item
-                v-for="(examQuestion, index) in editingExam.examQuestions"
-                :question="examQuestion.question"
-                :key="examQuestion.question.id">
-                <b-btn
-                  slot="action-btn"
-                  class="float-right"
-                  size="sm"
-                  @click.prevent="removeExamQuestion(index)"
-                  variant="danger">Delete</b-btn>
-              </question-list-item>
+              <draggable
+                :value="editingExam.examQuestions.map(examQuestion => examQuestion.question)"
+                :options="{ animation: 150, group: 'question' }"
+                @change="examQuestionChanged"
+                id="selected-question-list">
+                <question-list-item
+                  v-for="examQuestion in editingExam.examQuestions"
+                  :question="examQuestion.question"
+                  :key="examQuestion.question.id">
+                </question-list-item>
+              </draggable>
             </b-list-group>
           </b-card>
         </div>
@@ -70,6 +60,7 @@
 </template>
 
 <script>
+import draggable from 'vuedraggable'
 import TagSelection from '@/components/TagSelection'
 import QuestionListItem from '@/components/QuestionListItem'
 import client from '@/utils/client'
@@ -100,7 +91,14 @@ export default {
         params: params
       })
         .then(response => {
-          this.questions = response.data
+          let questions = response.data
+          if (this.editingExam) {
+            questions = questions
+              .filter(question =>
+                !this.editingExam.examQuestions
+                  .some(examQuestion => examQuestion.question.id === question.id))
+          }
+          this.questions = questions
           this.pagination.totalPageCount = parseInt(response.headers['x-total-page-count'])
           this.pagination.totalQuestionCount = parseInt(response.headers['x-total-count'])
         })
@@ -118,12 +116,15 @@ export default {
           })
         })
     },
-    addExamQuestion (question) {
-      console.log(question)
-      this.$store.commit('addExamQuestion', question)
-    },
-    removeExamQuestion (index) {
-      this.$store.commit('removeExamQuestion', index)
+    examQuestionChanged (change) {
+      if (change.added) {
+        this.$store.commit('addExamQuestion', change.added)
+      } else if (change.removed) {
+        this.$store.commit('removeExamQuestion', change.removed.oldIndex)
+      } else if (change.moved) {
+        this.$store.commit('removeExamQuestion', change.moved.oldIndex)
+        this.$store.commit('addExamQuestion', change.moved)
+      }
     }
   },
   mounted () {
@@ -141,11 +142,12 @@ export default {
   computed: {
     editingExam () {
       return this.$store.state.editingExam
-    }
+    },
   },
   components: {
     TagSelection,
     QuestionListItem,
+    draggable,
   }
 }
 </script>
@@ -162,5 +164,9 @@ export default {
       margin-right: 0;
     }
   }
+}
+
+#selected-question-list{
+  min-height: 10rem;
 }
 </style>
