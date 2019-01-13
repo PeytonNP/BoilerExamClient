@@ -32,7 +32,7 @@
                             :label-cols="2"
                             label-size="sm"
                             label="Points">
-                <b-input type="number" v-model="examQuestion.points" size="sm"></b-input>
+                <b-input type="number" v-model.number="examQuestion.points" size="sm"></b-input>
               </b-form-group>
               <b-btn
                 size="sm"
@@ -47,6 +47,11 @@
       <b-col>
         <b-card no-body header="Statistics">
           <canvas class="card-img-top" ref="stat-chart"/>
+          <b-list-group flush>
+            <b-list-group-item>
+              Total Score: {{form.examQuestions.map(examQuestion => examQuestion.points).reduce((x, y) => x + y, 0)}}
+            </b-list-group-item>
+          </b-list-group>
         </b-card>
       </b-col>
     </b-row>
@@ -67,33 +72,20 @@ export default {
     }
   }),
   mounted () {
-    console.log(this.editingExam && this.editingExam.id)
     if (this.editingExam && (this.editingExam.id === this.examID)) {
       this.form = this.editingExam
     } else {
       // fetch from server
     }
 
-    const tagMap = new Map()
-    this.form.examQuestions.forEach(examQuestion => {
-      examQuestion.question.tags.forEach(tag => {
-        const key = tag.title
-        if (!tagMap.has(key)) {
-          tagMap.set(key, 1)
-        } else {
-          tagMap.set(key, tagMap.get(key) + 1)
-        }
-      })
-    })
-    new Chart(this.$refs['stat-chart'], {
+    const tagMap = getTagMap(this.form.examQuestions)
+    this.chart = new Chart(this.$refs['stat-chart'], {
       data: {
         datasets: [{
           data: Array.from(tagMap.values()),
           backgroundColor: Array.from({ length: tagMap.size }, () => randomColor()),
         }],
-
-        // These labels appear in the legend and in the tooltips when hovering different arcs
-        labels:  Array.from(tagMap.keys())
+        labels: Array.from(tagMap.keys())
       },
       type: 'polarArea',
     })
@@ -115,6 +107,18 @@ export default {
       return this.$store.state.editingExam
     }
   },
+  watch: {
+    'form.examQuestions': {
+      handler () {
+        const tagMap = getTagMap(this.form.examQuestions)
+        this.chart.data.datasets.forEach((dataset) => {
+          dataset.data = Array.from(tagMap.values())
+        })
+        this.chart.update()
+      },
+      deep: true,
+    }
+  },
   components: {
     QuestionListItem,
   }
@@ -123,8 +127,16 @@ export default {
 function randomColor () {
   return `rgb(${Array.from({ length: 3 }, () => Math.round(Math.random() * 255))})`
 }
+
+function getTagMap (examQuestions) {
+  const tagMap = new Map()
+  examQuestions.forEach(examQuestion => {
+    examQuestion.question.tags.forEach(tag => {
+      const key = tag.title
+      const originalPoints = tagMap.has(key) ? tagMap.get(key) : 0
+      tagMap.set(key, originalPoints + examQuestion.points)
+    })
+  })
+  return tagMap
+}
 </script>
-
-<style scoped>
-
-</style>
