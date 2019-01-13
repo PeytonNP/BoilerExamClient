@@ -1,40 +1,61 @@
 <template>
   <b-container class="py-4">
     <b-row>
-      <b-col md="3">
-        <b-card header="Actions">
-          <p class="card-text">
-            <b-btn @click="addQuestion">Add Question</b-btn>
-          </p>
-        </b-card>
-        <b-card header="Filters">
-          <p class="card-text">
-            <tag-selection v-model="filters.tags"></tag-selection>
-          </p>
-        </b-card>
-      </b-col>
-      <b-col md="9">
+      <b-col md="7">
         <b-list-group v-if="questions">
-          <b-list-group-item
+          <question-list-item
             v-for="question in questions"
-            :key="question.id"
-            :to="{ name: 'question', params: { questionID: question.id }}">
-            <latex inline class="mb-1" :value="question.content"/>
-            <div class="library-badge-container">
-              <b-badge
-                v-for="tag in question.tags"
-                :key="tag.id"
-                :variant="filters.tags && filters.tags.some(t => t.id === tag.id) ? 'primary' : 'secondary'">
-                {{ tag.title }}
-              </b-badge>
-            </div>
-          </b-list-group-item>
+            :question="question"
+            :key="question.id">
+            <b-btn
+              v-if="editingExam"
+              slot="action-btn"
+              size="sm"
+              variant="outline-primary"
+              class="float-right"
+              @click.prevent="addExamQuestion(question)">
+              Add >>>
+            </b-btn>
+          </question-list-item>
         </b-list-group>
         <b-pagination
+          class="my-3 justify-content-center"
           size="md"
           :total-rows="pagination.totalQuestionCount"
           v-model="pagination.page"
           :per-page="pagination.perpage"/>
+      </b-col>
+      <b-col md="5">
+        <b-card header="Actions" class="mb-2">
+          <p class="card-text">
+            <b-btn @click="addQuestion">Add Question</b-btn>
+          </p>
+        </b-card>
+        <div class="sticky-top">
+          <b-card header="Filters" class="my-2">
+            <p class="card-text">
+              <tag-selection v-model="filters.tags"></tag-selection>
+            </p>
+          </b-card>
+          <b-card no-body header="Exam Questions" v-if="editingExam" class="my-2">
+            <b-list-group flush>
+              <b-list-group-item v-if="editingExam.examQuestions.length === 0">
+                The list is empty
+              </b-list-group-item>
+              <question-list-item
+                v-for="(examQuestion, index) in editingExam.examQuestions"
+                :question="examQuestion.question"
+                :key="examQuestion.question.id">
+                <b-btn
+                  slot="action-btn"
+                  class="float-right"
+                  size="sm"
+                  @click.prevent="removeExamQuestion(index)"
+                  variant="danger">Delete</b-btn>
+              </question-list-item>
+            </b-list-group>
+          </b-card>
+        </div>
       </b-col>
     </b-row>
   </b-container>
@@ -42,7 +63,7 @@
 
 <script>
 import TagSelection from '@/components/TagSelection'
-import Latex from '@/components/Latex'
+import QuestionListItem from '@/components/QuestionListItem'
 import client from '@/utils/client'
 
 export default {
@@ -88,6 +109,13 @@ export default {
             }
           })
         })
+    },
+    addExamQuestion (question) {
+      console.log(question)
+      this.$store.commit('addExamQuestion', question)
+    },
+    removeExamQuestion (index) {
+      this.$store.commit('removeExamQuestion', index)
     }
   },
   mounted () {
@@ -102,9 +130,14 @@ export default {
       this.loadPage(1)
     }
   },
+  computed: {
+    editingExam () {
+      return this.$store.state.editingExam
+    }
+  },
   components: {
     TagSelection,
-    Latex
+    QuestionListItem,
   }
 }
 </script>
