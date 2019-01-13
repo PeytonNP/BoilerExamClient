@@ -14,7 +14,7 @@
               variant="outline-primary"
               class="float-right"
               @click.prevent="addExamQuestion(question)">
-              Add >>>
+              Add<i class="fas fa-angle-double-right ml-1"></i>
             </b-btn>
           </question-list-item>
         </b-list-group>
@@ -38,6 +38,14 @@
             </p>
           </b-card>
           <b-card no-body header="Exam Questions" v-if="editingExam" class="my-2">
+            <b-card-body>
+              <p class="card-text">
+                <span>You are editing exam </span>
+                <router-link :to="{ name: 'exam', params: { examID: editingExam.id }}">
+                  <strong v-text="editingExam.title"/>
+                </router-link>
+              </p>
+            </b-card-body>
             <b-list-group flush>
               <b-list-group-item v-if="editingExam.examQuestions.length === 0">
                 The list is empty

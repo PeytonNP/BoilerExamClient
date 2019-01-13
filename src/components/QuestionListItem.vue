@@ -11,6 +11,7 @@
       </b-badge>
       <slot name="action-btn"></slot>
     </div>
+    <slot name="actions"></slot>
   </b-list-group-item>
 </template>
 
