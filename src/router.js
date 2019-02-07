@@ -30,7 +30,17 @@ export default new Router({
     {
       path: '/exams/:examID',
       name: 'exam',
-      component: () => import ('@/views/ExamDetail.vue')
+      component: () => import('@/views/ExamDetail.vue')
+    },
+    {
+      path: '/metrics',
+      name: 'metrics',
+      component: () => import('@/views/Metrics.vue')
+    },
+    {
+      path: '/problems',
+      name: 'problems',
+      component: () => import('@/views/Problems.vue')
     }
   ]
 })

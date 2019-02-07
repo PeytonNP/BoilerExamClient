@@ -6,7 +6,9 @@
       <b-collapse is-nav id="nav-collapse">
         <b-navbar-nav>
           <b-nav-item :to="{ name: 'library' }">Library</b-nav-item>
-          <b-nav-item :to="{ name: 'exams' }">Exams</b-nav-item>
+          <b-nav-item :to="{ name: 'problems' }">Problem Editor</b-nav-item>
+          <b-nav-item :to="{ name: 'exams' }">Exam Builder</b-nav-item>
+          <b-nav-item :to="{ name: 'metrics' }">Metrics</b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
