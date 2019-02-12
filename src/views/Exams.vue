@@ -16,10 +16,10 @@
               id="fieldset1"
               label="Exam Name"
               label-for="input1">
-              <b-form-input 
+              <b-form-input
                 id="input1"
                 placeholder="e.g. Dr. Mummert"
-                required>  
+                required>
               </b-form-input>
             </b-form-group>
 
@@ -27,12 +27,12 @@
               id="semesterLabel"
               label="Semester"
               label-for="semesterInput">
-              <b-form-input 
+              <b-form-input
                 id="semesterInput"
                 placeholder="e.g. Spring 2019"
-                required>  
+                required>
               </b-form-input>
-            </b-form-group>          
+            </b-form-group>
 
             <b-form-group horizontal
               id="courseSelect"
@@ -52,22 +52,22 @@
               id="sectionLabel"
               label="Section"
               label-for="sectionInput">
-              <b-form-input 
+              <b-form-input
                 id="sectionInput"
                 placeholder="e.g. Section01"
-                required>  
+                required>
               </b-form-input>
-            </b-form-group>  
+            </b-form-group>
 
             <b-form-group horizontal
               id="exportLabel"
               label="Export Name"
               label-for="exportInput"
               description="This will be the filename when exporting the exam.">
-              <b-form-input 
+              <b-form-input
                 id="exportInput"
                 placeholder="e.g. MA265Midterm2Spring2019"
-                required>  
+                required>
               </b-form-input>
             </b-form-group>
 
@@ -75,7 +75,7 @@
               id="dateLabel"
               label="Exam Date"
               label-for="dateInput">
-              <b-form-input 
+              <b-form-input
                 id="dateInput"
                 type="date"
                 required>
@@ -86,20 +86,18 @@
               id="timeLabel"
               label="Exam Time"
               label-for="timeInput">
-              <b-form-input 
+              <b-form-input
                 id="timeInput"
                 type="time"
                 required>
               </b-form-input>
             </b-form-group>
 
-            
-
           </b-form>
         </div>
-        
+
         <b-btn size="sm" class="float-right" type="reset" variant="danger">Reset (Add code)</b-btn><br>
-        
+
         <div slot="modal-footer" class="w-100">
          <b-btn size="sm" class="" variant="primary" @click="hideModal">Cancel</b-btn>
          <b-btn size="sm" class="float-right" variant="success" @click="">Continue</b-btn>
@@ -107,8 +105,8 @@
       </b-modal>
 </div>
 
-<br><br><br><br>
-<h3>List exams the user has</h3>
+<br><br>
+<h5>List exams the user already created</h5>
 <b-container>
   <b-row class="py-5">
     <b-col>
@@ -133,7 +131,7 @@
 
 <script>
 export default {
-  name: 'Exams', 
+  name: 'Exams',
   methods: {
     hideModal () {
       this.$refs.infoModal.hide()

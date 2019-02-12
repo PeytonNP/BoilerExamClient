@@ -41,6 +41,11 @@ export default new Router({
       path: '/problems',
       name: 'problems',
       component: () => import('@/views/Problems.vue')
+    },
+    {
+      path: '/cart',
+      name: 'cart',
+      component: () => import('@/views/Cart.vue')
     }
   ]
 })
