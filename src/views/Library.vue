@@ -14,7 +14,7 @@
 
     <div class="">
       <br>
-      <b-button-group size="md">
+      <b-button-group size="">
         <b-button>Create New Question</b-button>
         <b-button>Create New Exam</b-button>
         <b-button>View Exam Cart</b-button>
@@ -30,7 +30,7 @@
                 <td><button class="btn"><i class="fas fa-ellipsis-v"></i></button></td>
                 <td><p>Tags</p></td>
                 <td><p>Question + Answer</p></td>
-                <td><button class="btn"><i class="fas fa-eye" @click="viewMore"></i></button></td>
+                <td><button class="btn"><i class="fas fa-eye" @click=""></i></button></td>
               </tr>
               <tr>
                 <td><button class="btn"><i class="fas fa-ellipsis-v"></i></button></td>
@@ -60,7 +60,6 @@
       </table>
     </div>
 
-    
   </div>
 </template>
 

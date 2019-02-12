@@ -5,13 +5,14 @@
       <p>Query list of courses available from the database (course titles as well?)</p>
       <h3>What course(s) do you teach?</h3>
       <b-button-group vertical>
-        <b-button v-for="btn in buttons" :pressed.sync="btn.state" :variant="btn.variant" :key="btn.variant">
+        <b-button v-for="btn in buttons" :pressed.sync="btn.state" :variant="btn.variant">
           {{ btn.caption }}&nbsp;
         </b-button>
       </b-button-group>
       <p>Selected State: <strong>{{ btnStates }}</strong></p>
     </div>
   </div>
+
 </template>
 
 <script>
