@@ -70,10 +70,14 @@
         <p>Describe a list of actions the user can take</p>
         <p>Select one of the following actions</p>
         <b-list-group>
-          <b-list-group-item href="#">Clone - Copy this problem to my problems</b-list-group-item>
-          <b-list-group-item href="#">Cart - Add this problem to my exam cart</b-list-group-item>
-          <b-list-group-item href="#">Other action</b-list-group-item>
-          <b-list-group-item href="#" disabled>Edit - Cannot edit another user's problem</b-list-group-item>
+          <b-list-group-item href="#"><i class="fas fa-copy"></i>
+          Clone - Copy this problem to my problems</b-list-group-item>
+          <b-list-group-item href="#"><i class="fas fa-shopping-cart"></i>
+          Cart - Add this problem to my exam cart</b-list-group-item>
+          <b-list-group-item href="#">
+          Other action</b-list-group-item>
+          <b-list-group-item href="#" disabled><i class="fas fa-user-edit"></i>
+          Edit - Cannot edit another user's problem</b-list-group-item>
         </b-list-group>
       </b-modal>
     </div>
