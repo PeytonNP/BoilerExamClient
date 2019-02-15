@@ -1,18 +1,81 @@
 <template>
-  <div class="home">
-    <p>Replace with B^e Custom Image</p>
-    <div class="center-div">
-      <p>Query list of courses available from the database (course titles as well?)</p>
-      <h3>What course(s) do you teach?</h3>
+  <div>
+    <div class="inner">
+      <br><p>Add B^e Custom Image</p>
+    </div>
+
+    <div class="inner">
+      <b-container fluid>
+        <p>Query list of courses available from the database (course titles as well?)</p>
+      </b-container>
+
+      <b-card
+      header="What course(s) are you associated with?"
+      align="center">
+
       <b-button-group vertical>
-        <b-button v-for="btn in buttons" :pressed.sync="btn.state" :variant="btn.variant">
-          {{ btn.caption }}&nbsp;
+        <b-button v-for="btn in btnCourseList" :pressed.sync="btn.state" :variant="btn.variant">
+          {{ btn.caption }}
         </b-button>
       </b-button-group>
       <p>Selected State: <strong>{{ btnStates }}</strong></p>
-    </div>
+    </b-card>
   </div>
 
+  <hr>
+  <div class="">
+    <h3>User is associated with at least one course and authenticated</h3>
+    <p>"Pick up where you left off" / User Dashboard</p>
+
+    <b-container>
+      <b-card-group deck>
+        <b-card header="Your Questions">
+          <p class="card-text">Description</p>
+          <b-list-group>
+            <b-list-group-item href="#" class="d-flex justify-content-between align-items-center">
+              Problem #ID - Course
+              <b-badge variant="primary">Draft</b-badge>
+            </b-list-group-item>
+
+            <b-list-group-item href="#" class="d-flex justify-content-between align-items-center">
+              Problem #ID - Course
+              <b-badge variant="primary">Approved</b-badge>
+            </b-list-group-item>
+
+            <b-list-group-item href="#" class="d-flex justify-content-between align-items-center">
+              Problem #ID - Course
+              <b-badge variant="primary">Used on Exam</b-badge>
+            </b-list-group-item>
+          </b-list-group>
+        </b-card>
+
+        <b-card header="Your Exams">
+          <p class="card-text">Description</p>
+
+          <b-list-group>
+            <b-list-group-item href="#" class="d-flex justify-content-between align-items-center">
+              Exam Name
+              <b-badge variant="info">Exam State</b-badge>
+            </b-list-group-item>
+
+            <b-list-group-item href="#" class="d-flex justify-content-between align-items-center">
+              Exam Name
+              <b-badge variant="info">Exam State</b-badge>
+            </b-list-group-item>
+
+            <b-list-group-item href="#" class="d-flex justify-content-between align-items-center">
+              Exam Name
+              <b-badge variant="info">Exam State</b-badge>
+            </b-list-group-item>
+          </b-list-group>
+
+        </b-card>
+      </b-card-group>
+    </b-container>
+
+  </div>
+
+</div>
 </template>
 
 <script>
@@ -24,7 +87,7 @@ export default {
     return {
       myToggle: false,
       toggleMA161: false,
-      buttons: [
+      btnCourseList: [
         { variant: 'primary', caption: 'MA 16010', state: false },
         { variant: 'primary', caption: 'MA 16020', state: false },
         { variant: 'primary', caption: 'MA 16100', state: false },
@@ -40,7 +103,7 @@ export default {
   },
   computed: {
     btnStates () {
-      return this.buttons.map(btn => btn.state)
+      return this.btnCourseList.map(btn => btn.state)
     }
   }
 }
