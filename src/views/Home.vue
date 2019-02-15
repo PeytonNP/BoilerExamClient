@@ -24,6 +24,7 @@
 
   <hr>
   <div class="">
+    <h3>Redesign</h3>
     <h3>User is associated with at least one course and authenticated</h3>
     <p>"Pick up where you left off" / User Dashboard</p>
 
