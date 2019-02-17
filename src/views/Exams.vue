@@ -11,13 +11,13 @@
       <b-modal id="examInfoModal" ref="infoModal" title="Exam Basic Information">
         <p>Note: Can edit information later</p>
         <div>
-          <b-form>
+          <b-form id="examForm">
             <b-form-group horizontal
               id="fieldset1"
               label="Exam Name"
-              label-for="input1">
+              label-for="examNameInput">
               <b-form-input
-                id="input1"
+                id="examNameInput"
                 placeholder="e.g. Dr. Mummert"
                 required>
               </b-form-input>
@@ -96,11 +96,12 @@
           </b-form>
         </div>
 
-        <b-btn size="sm" class="float-right" type="reset" variant="danger">Reset (Add code)</b-btn><br>
-
+        <b-btn size="sm" class="float-right" type="reset" variant="danger" v-on:click="resetForm">
+        Reset</b-btn><br>
         <div slot="modal-footer" class="w-100">
-         <b-btn size="sm" class="" variant="primary" @click="hideModal">Cancel</b-btn>
-         <b-btn size="sm" class="float-right" variant="success" @click="">Continue</b-btn>
+         <b-btn size="sm" class="" variant="primary" v-on:click="hideModal">Cancel</b-btn>
+         <b-btn size="sm" class="float-right" variant="success"
+         :to="{ name: 'cart' }">Continue</b-btn>
        </div>
       </b-modal>
 </div>
@@ -133,8 +134,11 @@
 export default {
   name: 'Exams',
   methods: {
-    hideModal () {
+    hideModal: function () {
       this.$refs.infoModal.hide()
+    },
+    resetForm: function () {
+      document.getElementById('examForm').reset()
     }
   }
 }

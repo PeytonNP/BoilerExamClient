@@ -17,12 +17,10 @@
 				rows="3"
 				max-rows="6"
 				/>
-
-				<pre class="mt-3">{{ text }}</pre>
 			</div>
 
 			<div class="">
-				<p>Add supporting images, graphs, tex, and other documents</p>
+				<br><p>Add supporting images, graphs, tex, and other documents</p>
 				<div>
 					<b-form-file
 					v-model="file"
@@ -30,7 +28,6 @@
 					placeholder="Choose a file..."
 					drop-placeholder="Drop file here..."
 					/>
-					<div class="mt-3">Selected file: {{ file ? file.name : '' }}</div>
 				</div>
 
 			</div>
