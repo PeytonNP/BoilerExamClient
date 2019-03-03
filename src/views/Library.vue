@@ -2,7 +2,7 @@
   <div class="library container">
     <br>
     <h2>Question Catalog
-      <b-dropdown right text="Course">
+      <b-dropdown right text="Course" variant="custom-orange">
         <b-dropdown-item>All Courses</b-dropdown-item>
         <b-dropdown-divider></b-dropdown-divider>
         <b-dropdown-item>MA 16100</b-dropdown-item>
@@ -15,9 +15,9 @@
     <div class="">
       <br>
       <b-button-group size="">
-        <b-button>Create New Question</b-button>
-        <b-button>Create New Exam</b-button>
-        <b-button>View Exam Cart</b-button>
+        <b-button variant="custom-lightblue">Create New Question</b-button>
+        <b-button variant="custom-lightblue">Create New Exam</b-button>
+        <b-button variant="custom-lightblue">View Exam Cart</b-button>
       </b-button-group>
       <br><br>
     </div>

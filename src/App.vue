@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <b-navbar toggleable type="dark" variant="dark">
+    <b-navbar toggleable type="dark" variant="custom-darkgrey">
     <b-navbar-toggle target="nav_text_collapse" />
     <b-navbar-brand :to="{ name: 'home' }">Boiler Exam</b-navbar-brand>
     <b-collapse is-nav id="nav_text_collapse">
@@ -17,7 +17,7 @@
         <b-nav-item :to="{ name: 'cart' }"><i class="fas fa-shopping-cart fa-lg"></i></b-nav-item>
         <b-nav-form>
           <b-form-input size="sm" class="mr-sm-2" type="text" placeholder="Search"/>
-          <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
+          <b-button variant="custom-yellow" size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
         </b-nav-form>
       </b-navbar-nav>
     </b-collapse>
@@ -28,6 +28,7 @@
 </template>
 
 <style lang="scss">
+@import './styles/boilercustom';
 @import '~bootstrap/scss/bootstrap.scss';
 @import '~bootstrap-vue/dist/bootstrap-vue.css';
 

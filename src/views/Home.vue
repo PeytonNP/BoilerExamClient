@@ -35,17 +35,17 @@
           <b-list-group>
             <b-list-group-item href="#" class="d-flex justify-content-between align-items-center">
               Problem #ID - Course
-              <b-badge variant="primary">Draft</b-badge>
+              <b-badge variant="custom-lightblue">Draft</b-badge>
             </b-list-group-item>
 
             <b-list-group-item href="#" class="d-flex justify-content-between align-items-center">
               Problem #ID - Course
-              <b-badge variant="primary">Approved</b-badge>
+              <b-badge variant="custom-darkblue">Approved</b-badge>
             </b-list-group-item>
 
             <b-list-group-item href="#" class="d-flex justify-content-between align-items-center">
               Problem #ID - Course
-              <b-badge variant="primary">Used on Exam</b-badge>
+              <b-badge variant="custom-darkgrey">Used on Exam</b-badge>
             </b-list-group-item>
           </b-list-group>
         </b-card>
@@ -56,17 +56,17 @@
           <b-list-group>
             <b-list-group-item href="#" class="d-flex justify-content-between align-items-center">
               Exam Name
-              <b-badge variant="info">Exam State</b-badge>
+              <b-badge variant="custom-yellow">Exam State</b-badge>
             </b-list-group-item>
 
             <b-list-group-item href="#" class="d-flex justify-content-between align-items-center">
               Exam Name
-              <b-badge variant="info">Exam State</b-badge>
+              <b-badge variant="custom-orange">Exam State</b-badge>
             </b-list-group-item>
 
             <b-list-group-item href="#" class="d-flex justify-content-between align-items-center">
               Exam Name
-              <b-badge variant="info">Exam State</b-badge>
+              <b-badge variant="custom-darkgrey">Exam State</b-badge>
             </b-list-group-item>
           </b-list-group>
 
@@ -89,16 +89,16 @@ export default {
       myToggle: false,
       toggleMA161: false,
       btnCourseList: [
-        { variant: 'primary', caption: 'MA 16010', state: false },
-        { variant: 'primary', caption: 'MA 16020', state: false },
-        { variant: 'primary', caption: 'MA 16100', state: false },
-        { variant: 'primary', caption: 'MA 16200', state: false },
-        { variant: 'primary', caption: 'MA 16600', state: false },
-        { variant: 'primary', caption: 'MA 25000 - Linear Algebra', state: false },
-        { variant: 'primary', caption: 'MA 26100 - Multivariate Calculus', state: false },
-        { variant: 'primary', caption: 'MA 35100 - Elementary Linear Algebra', state: false },
-        { variant: 'primary', caption: 'MA 36600 - Ordinary Differential Equations', state: false },
-        { variant: 'primary', caption: 'MA 41600 - Probability', state: false }
+        { variant: 'custom-lightblue', caption: 'MA 16010', state: false },
+        { variant: 'custom-lightblue', caption: 'MA 16020', state: false },
+        { variant: 'custom-darkblue', caption: 'MA 16100', state: false },
+        { variant: 'custom-darkblue', caption: 'MA 16200', state: false },
+        { variant: 'custom-darkgrey', caption: 'MA 16600', state: false },
+        { variant: 'custom-darkgrey', caption: 'MA 25000 - Linear Algebra', state: false },
+        { variant: 'custom-yellow', caption: 'MA 26100 - Multivariate Calculus', state: false },
+        { variant: 'custom-yellow', caption: 'MA 35100 - Elementary Linear Algebra', state: false },
+        { variant: 'custom-orange', caption: 'MA 36600 - Ordinary Differential Equations', state: false },
+        { variant: 'custom-orange', caption: 'MA 41600 - Probability', state: false }
       ]
     }
   },

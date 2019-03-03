@@ -5,7 +5,7 @@
 
     <div class="">
       <br>&nbsp;&nbsp;
-      <b-btn v-b-modal.examInfoModal>Create New Exam</b-btn>
+      <b-btn v-b-modal.examInfoModal variant="custom-orange">Create New Exam</b-btn>
 
       <!-- Modal Component -->
       <b-modal id="examInfoModal" ref="infoModal" title="Exam Basic Information">
@@ -99,8 +99,8 @@
         <b-btn size="sm" class="float-right" type="reset" variant="danger" v-on:click="resetForm">
         Reset</b-btn><br>
         <div slot="modal-footer" class="w-100">
-         <b-btn size="sm" class="" variant="primary" v-on:click="hideModal">Cancel</b-btn>
-         <b-btn size="sm" class="float-right" variant="success"
+         <b-btn size="sm" class="" variant="custom-yellow" v-on:click="hideModal">Cancel</b-btn>
+         <b-btn size="sm" class="float-right" variant="custom-darkblue"
          :to="{ name: 'cart' }">Continue</b-btn>
        </div>
       </b-modal>
