@@ -46,6 +46,12 @@ $vue-multiselect-spinner-color : $dark !default;
 // Select field
 //--
 
+.inner {
+  display: table;
+  margin: 0 auto;
+}
+
+
 fieldset[disabled] .multiselect {
   pointer-events : none;
 }
