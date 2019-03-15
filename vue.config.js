@@ -7,5 +7,8 @@ module.exports = {
     },
     public: 'http://localhost:8080',
   },
+  publicPath: process.env.NODE_ENV === 'production'
+    ? '/itap/boilerexam/'
+    : '/',
   integrity: true,
 }
