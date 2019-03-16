@@ -2,29 +2,17 @@
   <b-container>
     <b-row class="my-4">
       <b-col>
-        <b-form>
-          <b-form-group
-            id="title"
-            label="Title:"
-            label-for="title-input"
-          >
-            <b-form-input id="title-input" v-model.trim="form.title"/>
-          </b-form-group>
-          <b-form-group
-            id="description"
-            label="Description:"
-            label-for="des-input"
-          >
-            <b-form-textarea id="des-input" v-model="form.description"/>
-          </b-form-group>
-        </b-form>
+        <div class="pb-5">
+          <exam-basic-info v-model="form" />
+          <b-button variant="primary" @click="saveForm">Save</b-button>
+        </div>
         <b-list-group>
-          <b-list-group-item v-if="form.examQuestions.length === 0">
+          <b-list-group-item v-if="form.ExamQuestions.length === 0">
             The list is empty
           </b-list-group-item>
-          <draggable v-model="form.examQuestions" :options="{ animation: 150 }" >
+          <draggable v-model="form.ExamQuestions" :options="{ animation: 150 }" >
             <question-list-item
-              v-for="(examQuestion, index) in form.examQuestions"
+              v-for="(examQuestion, index) in form.ExamQuestions"
               :question="examQuestion.question"
               :key="examQuestion.question.id">
               <div slot="actions" @click.stop.prevent class="mt-3">
@@ -50,7 +38,7 @@
           <canvas class="card-img-top" ref="stat-chart"/>
           <b-list-group flush>
             <b-list-group-item>
-              Total Score: {{form.examQuestions.map(examQuestion => examQuestion.points).reduce((x, y) => x + y, 0)}}
+              Total Score: {{form.ExamQuestions.map(examQuestion => examQuestion.points).reduce((x, y) => x + y, 0)}}
             </b-list-group-item>
           </b-list-group>
         </b-card>
@@ -62,7 +50,7 @@
           </b-list-group>
           <b-card-body>
             <b-form class="card-text">
-              <b-form-group horizontal
+              <b-form-group label-cols
                             label-size="sm"
                             label="Versions">
                 <b-input type="number" size="sm"></b-input>
@@ -80,24 +68,33 @@
 import Chart from 'chart.js'
 import draggable from 'vuedraggable'
 import QuestionListItem from '@/components/QuestionListItem'
+import ExamBasicInfo from '@/components/ExamBasicInfo'
+import client from '@/utils/client'
+import moment from 'moment'
 export default {
   name: 'ExamDetail',
   data: () => ({
     form: {
-      id: 'testID',
-      title: '',
-      description: '',
-      examQuestions: []
+      Id: 'testID',
+      Title: '',
+      Description: '',
+      Time: new Date(),
+      ExamQuestions: []
     }
   }),
-  mounted () {
+  async mounted () {
     if (this.editingExam && (this.editingExam.id === this.examID)) {
       this.form = this.editingExam
     } else {
-      // fetch from server
+      const data = await client.get(`/Exams/${this.$route.params.examID}`).then(res => res.data)
+      console.log(data)
+      this.form.Id = data.Id
+      this.form.Title = data.Title
+      this.form.Description = data.Description
+      this.form.Time = moment(data.Time).toDate()
     }
 
-    const tagMap = getTagMap(this.form.examQuestions)
+    const tagMap = getTagMap(this.form.ExamQuestions)
     this.chart = new Chart(this.$refs['stat-chart'], {
       data: {
         datasets: [{
@@ -115,7 +112,10 @@ export default {
       this.$router.push({ name: 'library' })
     },
     removeExamQuestion (index) {
-      this.form.examQuestions.splice(index, 1)
+      this.form.ExamQuestions.splice(index, 1)
+    },
+    saveForm () {
+      client.put(`/Exams/${this.form.Id}`, this.form)
     },
   },
   computed: {
@@ -127,9 +127,9 @@ export default {
     }
   },
   watch: {
-    'form.examQuestions': {
+    'form.ExamQuestions': {
       handler () {
-        const tagMap = getTagMap(this.form.examQuestions)
+        const tagMap = getTagMap(this.form.ExamQuestions)
         this.chart.data.datasets.forEach((dataset) => {
           dataset.data = Array.from(tagMap.values())
         })
@@ -141,6 +141,7 @@ export default {
   components: {
     QuestionListItem,
     draggable,
+    ExamBasicInfo,
   }
 }
 
