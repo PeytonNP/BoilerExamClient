@@ -23,42 +23,20 @@
     </div>
 
     <div class="">
-      <p>Populate from database</p>
       <table class="table table-bordered" style="width:100%">
-          <tbody>
-              <tr>
-                <td><button class="btn" v-b-modal.actionModal><i class="fas fa-ellipsis-v"></i></button></td>
-                <td><p>Tags</p></td>
-                <td><p>Question + Answer</p></td>
-                <td><button class="btn" v-b-modal.focusModal><i class="fas fa-eye" @click=""></i></button></td>
-              </tr>
-              <tr>
-                <td><button class="btn" v-b-modal.actionModal><i class="fas fa-ellipsis-v"></i></button></td>
-                <td><p>Tags</p></td>
-                <td><p>Question + Answer</p></td>
-                <td><button class="btn" v-b-modal.focusModal><i class="fas fa-eye"></i></button></td>
-              </tr>
-              <tr>
-                <td><button class="btn" v-b-modal.actionModal><i class="fas fa-ellipsis-v"></i></button></td>
-                <td><p>Tags</p></td>
-                <td><p>Question + Answer</p></td>
-                <td><button class="btn" v-b-modal.focusModal><i class="fas fa-eye"></i></button></td>
-              </tr>
-              <tr>
-                <td><button class="btn" v-b-modal.actionModal><i class="fas fa-ellipsis-v"></i></button></td>
-                <td><p>Tags</p></td>
-                <td><p>Question + Answer</p></td>
-                <td><button class="btn" v-b-modal.focusModal><i class="fas fa-eye"></i></button></td>
-              </tr>
-              <tr>
-                <td><button class="btn" v-b-modal.actionModal><i class="fas fa-ellipsis-v"></i></button></td>
-                <td><p>Tags</p></td>
-                <td><p>Question + Answer</p></td>
-                <td><button class="btn" v-b-modal.focusModal><i class="fas fa-eye"></i></button></td>
-              </tr>
-          </tbody>
+        <tbody>
+          <tr v-for="question in questions">
+            <td><button class="btn" v-b-modal.actionModal><i class="fas fa-ellipsis-v"></i></button></td>
+            <td><p v-text="question.Tags.map(a => a.Title).join('|')" /></td>
+            <td><p v-text="question.Content" /></td>
+            <td><button class="btn" v-b-modal.focusModal><i class="fas fa-eye" @click=""></i></button></td>
+          </tr>
+        </tbody>
       </table>
     </div>
+    <b-pagination :total-rows="totalNum" :per-page="20" v-model="currentPage">
+
+    </b-pagination>
 
     <div class="inner">
       <b-modal id="focusModal" size="lg" title="Question ID">
@@ -86,9 +64,47 @@
 </template>
 
 <script>
+import axios from '@/utils/client'
 export default {
   name: 'Library',
+  data () {
+    return {
+      currentPage: 1,
+      questions: [],
+      totalNum: 10
+    }
+  },
   components: {
+  },
+  mounted () {
+    const page = this.$route.query.page || 1
+    this.toPage(page)
+      .then(() => {
+        this.currentPage = page
+      })
+  },
+  methods: {
+    toPage (page) {
+      return axios.get('/Questions', {
+        params: { page: page }
+      })
+        .then(res => {
+          this.questions = res.data.data
+          this.totalNum = res.data.totalEntries
+        })
+    }
+  },
+  watch: {
+    currentPage (page, oldPage) {
+      console.log(page, oldPage)
+      if (page === parseInt(oldPage)) {
+        return
+      }
+      this.toPage(page)
+        .then(() => {
+          this.$router.replace({ query: { page: page } })
+        })
+    }
   }
 }
 </script>
