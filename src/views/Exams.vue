@@ -10,98 +10,14 @@
       <!-- Modal Component -->
       <b-modal id="examInfoModal" ref="infoModal" title="Exam Basic Information">
         <p>Note: Can edit information later</p>
-        <div>
-          <b-form id="examForm">
-            <b-form-group horizontal
-              id="fieldset1"
-              label="Exam Name"
-              label-for="examNameInput">
-              <b-form-input
-                id="examNameInput"
-                placeholder="e.g. Dr. Mummert"
-                required>
-              </b-form-input>
-            </b-form-group>
-
-            <b-form-group horizontal
-              id="semesterLabel"
-              label="Semester"
-              label-for="semesterInput">
-              <b-form-input
-                id="semesterInput"
-                placeholder="e.g. Spring 2019"
-                required>
-              </b-form-input>
-            </b-form-group>
-
-            <b-form-group horizontal
-              id="courseSelect"
-              label="Course Name"
-              label-for="courseDropdown"
-              description="get list of courses for user">
-              <b-form-select class="" id="courseDropdown">
-                <option value="null">Please select an option</option>
-                <option value="a">Course A</option>
-                <option value="b">Course B</option>
-                <option value="c">Course C</option>
-                <option value="d">Course D</option>
-              </b-form-select>
-            </b-form-group>
-
-            <b-form-group horizontal
-              id="sectionLabel"
-              label="Section"
-              label-for="sectionInput">
-              <b-form-input
-                id="sectionInput"
-                placeholder="e.g. Section01"
-                required>
-              </b-form-input>
-            </b-form-group>
-
-            <b-form-group horizontal
-              id="exportLabel"
-              label="Export Name"
-              label-for="exportInput"
-              description="This will be the filename when exporting the exam.">
-              <b-form-input
-                id="exportInput"
-                placeholder="e.g. MA265Midterm2Spring2019"
-                required>
-              </b-form-input>
-            </b-form-group>
-
-            <b-form-group horizontal
-              id="dateLabel"
-              label="Exam Date"
-              label-for="dateInput">
-              <b-form-input
-                id="dateInput"
-                type="date"
-                required>
-              </b-form-input>
-            </b-form-group>
-
-            <b-form-group horizontal
-              id="timeLabel"
-              label="Exam Time"
-              label-for="timeInput">
-              <b-form-input
-                id="timeInput"
-                type="time"
-                required>
-              </b-form-input>
-            </b-form-group>
-
-          </b-form>
-        </div>
+        <exam-basic-info :value="form" />
 
         <b-btn size="sm" class="float-right" type="reset" variant="danger" v-on:click="resetForm">
         Reset</b-btn><br>
         <div slot="modal-footer" class="w-100">
          <b-btn size="sm" class="" variant="custom-yellow" v-on:click="hideModal">Cancel</b-btn>
          <b-btn size="sm" class="float-right" variant="custom-darkblue"
-         :to="{ name: 'cart' }">Continue</b-btn>
+         @click="addNewExam">Continue</b-btn>
        </div>
       </b-modal>
 </div>
@@ -112,11 +28,12 @@
   <b-row class="py-5">
     <b-col>
       <b-list-group>
-        <b-list-group-item :to="{ name: 'exam', params: { examID: 'testID' } }">
+        <b-list-group-item :to="{ name: 'exam', params: { examID: exam.Id } }" v-for="exam in exams" :key="exam.Id">
           <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1">MA261 - Fall18</h5>
-            <small>3 days ago</small>
+            <h5 class="mb-1" v-text="exam.Title" />
+            <small v-text="time(exam.Time)"/>
           </div>
+          <p v-text="exam.Description" />
           <p class="mb-1">
             <b-badge>Tested</b-badge>
             12 Questions
@@ -131,15 +48,49 @@
 </template>
 
 <script>
+import ExamBasicInfo from '@/components/ExamBasicInfo'
+import client from '@/utils/client'
+import moment from 'moment'
 export default {
   name: 'Exams',
+  data: () => ({
+    form: {
+      Title: '',
+      Description: '',
+      Time: new Date(),
+      ExamQuestions: []
+    },
+    exams: []
+  }),
+  async mounted () {
+    const data = await client.get('/Exams').then(res => res.data)
+    this.exams = data
+    console.log(this.exams)
+  },
   methods: {
-    hideModal: function () {
+    hideModal () {
       this.$refs.infoModal.hide()
     },
-    resetForm: function () {
+    resetForm () {
       document.getElementById('examForm').reset()
+    },
+    addNewExam () {
+      const data = {
+        ...this.form,
+      }
+      console.log(data)
+      client.post('/Exams', data)
+        .then((res) => {
+          const id = res.data.Id
+          this.$router.push({ name: 'exam', params: { examID: id } })
+        })
+    },
+    time (time) {
+      return moment(time).calendar()
     }
+  },
+  components: {
+    ExamBasicInfo,
   }
 }
 </script>
