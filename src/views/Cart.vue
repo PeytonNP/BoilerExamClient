@@ -1,125 +1,67 @@
 <template>
-	<div class="">
-		<br><p>Items currently in user's cart</p>
-		<p>Add drag and drop api to move questions to appropriate order</p>
+  <div class="">
+    <br>
+    <div class="inner">
+      <b-button-group size="">
+        <b-button variant="custom-orange">Generate Preview</b-button>
+        <b-button variant="custom-orange">Download PDF</b-button>
+        <b-button variant="custom-orange">Download LaTeX</b-button>
+      </b-button-group>
+    </div>
+    <hr>
+    <div class="inner">
 
-		<div class="inner">
-			<b-button-group size="">
-		        <b-button variant="primary">Generate Preview</b-button>
-		        <b-button variant="primary">Download PDF</b-button>
-		        <b-button variant="primary">Download LaTeX</b-button>
-		      </b-button-group>
-		</div>
-		<hr>
+      <draggable v-model="myArray" group="people" @start="drag=true" @end="drag=false">
+       <div v-for="element in myArray" :key="element.id">{{element.name}}</div>
+     </draggable>
 
-		<div class="inner">
-			<b-list-group>
-				<b-list-group-item href="#" class="flex-column align-items-start">
-					<div class="d-flex w-100 justify-content-between">
-						<h5 class="mb-1">Problem</h5>
-						<small>3 day(s) ago
-						<b-badge variant="primary">Draft</b-badge></small>
-					</div>
+     <b-list-group>
+      <b-list-group-item href="#" class="flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+          <h5 class="mb-1">Problem</h5>
+          <small>3 day(s) ago
+            <b-badge variant="primary">Draft</b-badge></small>
+          </div>
 
-					<p class="mb-1">
-						Problem Preview (Image / Graph Zoom)
-					</p>
+          <p class="mb-1">
+            Problem Preview (Image / Graph Zoom)
+          </p>
 
-					<small class="text-muted">Description / Tags / Other Information
-						<br><b-button variant="warning" size="sm">Remove From Exam Cart</b-button>
-					</small>
-				</b-list-group-item>
+          <small class="text-muted">Description / Tags / Other Information
+            <br><b-button variant="warning" size="sm">Remove From Exam Cart</b-button>
+          </small>
+        </b-list-group-item>
 
-				<b-list-group-item href="#" class="flex-column align-items-start">
-					<div class="d-flex w-100 justify-content-between">
-						<h5 class="mb-1">Problem</h5>
-						<small>7 day(s) ago
-						<b-badge variant="primary">Draft</b-badge></small>
-					</div>
+        <b-list-group-item href="#" v-for="item in cartList"
+        class="flex-column align-items-start">
+        {{ item.questionID }}
+        <div class="d-flex w-100 justify-content-between">
+          <h5 class="mb-1">{{ item.questionID }}</h5>
+          <small>{{ item.editDate }}
+            <b-badge variant="primary">{{ item.state }}</b-badge></small>
+          </div>
 
-					<p class="mb-1">
-						Problem Preview (Image / Graph Zoom)
-					</p>
+          <p class="mb-1">
+            Problem Preview (Image / Graph Zoom)
+          </p>
 
-					<small class="text-muted">Description / Tags / Other Information
-					<br><b-button variant="warning" size="sm">Remove From Exam Cart</b-button>
-					</small>
-				</b-list-group-item>
+          <small class="text-muted">{{ item.description }}
+            <br><b-button variant="warning" size="sm">Remove From Exam Cart</b-button>
+          </small>
+        </b-list-group-item>
 
-				<b-list-group-item href="#" class="flex-column align-items-start">
-					<div class="d-flex w-100 justify-content-between">
-						<h5 class="mb-1">Problem</h5>
-						<small>13 day(s) ago
-						<b-badge variant="primary">Draft</b-badge></small>
-					</div>
+      </b-list-group>
+    </div>
 
-					<p class="mb-1">
-						Problem Preview (Image / Graph Zoom)
-					</p>
-
-					<small class="text-muted">Description / Tags / Other Information
-					<br><b-button variant="warning" size="sm">Remove From Exam Cart</b-button>
-					</small>
-				</b-list-group-item>
-
-				<b-list-group-item href="#" class="flex-column align-items-start">
-					<div class="d-flex w-100 justify-content-between">
-						<h5 class="mb-1">Problem</h5>
-						<small class="text-muted">30 Day(s) Ago
-						<b-badge variant="primary">Approved</b-badge></small>
-					</div>
-
-					<p class="mb-1">
-						Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text.
-					</p>
-
-					<small class="text-muted">Description / Tags / Other Information
-					<br><b-button variant="warning" size="sm">Remove From Exam Cart</b-button>
-					</small>
-				</b-list-group-item>
-
-				<b-list-group-item href="#" class="flex-column align-items-start">
-					<div class="d-flex w-100 justify-content-between">
-						<h5 class="mb-1">Problem</h5>
-						<small class="text-muted">60 Day(s) Ago
-						<b-badge variant="danger">Already Used</b-badge></small>
-					</div>
-
-					<p class="mb-1">
-						Problem Preview (Image / Graph Zoom)
-					</p>
-
-					<small class="text-muted">Description / Tags / Other Information
-					<br><b-button variant="warning" size="sm">Remove From Exam Cart</b-button>
-					</small>
-				</b-list-group-item>
-
-				<b-list-group-item href="#" class="flex-column align-items-start">
-					<div class="d-flex w-100 justify-content-between">
-						<h5 class="mb-1">Problem</h5>
-						<small class="text-muted">1 Day(s) Ago
-						<b-badge variant="danger">Not Approved</b-badge></small>
-					</div>
-
-					<p class="mb-1">
-						Problem Preview (Image / Graph Zoom)
-					</p>
-
-					<small class="text-muted">Description / Tags / Other Information
-					<br><b-button variant="warning" size="sm">Remove From Exam Cart</b-button>
-					</small>
-				</b-list-group-item>
-
-			</b-list-group>
-		</div>
-
-	</div>
+  </div>
 </template>
 
 <script>
+import draggable from 'vuedraggable'
 export default {
   name: 'cart',
   components: {
+    draggable
   }
 }
 </script>

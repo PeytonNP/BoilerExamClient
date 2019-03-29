@@ -1,6 +1,5 @@
 <template>
   <div>
-    <p>Metrics (if time permits)</p>
   </div>
 
 </template>

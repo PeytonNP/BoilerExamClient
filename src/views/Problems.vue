@@ -1,8 +1,7 @@
 <template>
     <div>
-    <p>Problems</p>
-    <p>katex</p>
 
+    <p> TODO and REMOVE (Problems.vue): Neal, add the latex api inputs here</p>
     <div class="inner">
     <b-button variant="custom-darkblue">Save Progress</b-button>
     <b-button variant="custom-darkblue">Send Question for Approval</b-button>

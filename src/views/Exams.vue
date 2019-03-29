@@ -1,8 +1,5 @@
 <template>
   <div>
-
-    <p>Which input needs to be required?</p>
-
     <div class="">
       <br>&nbsp;&nbsp;
       <b-btn v-b-modal.examInfoModal variant="custom-orange">Create New Exam</b-btn>
@@ -23,7 +20,6 @@
 </div>
 
 <br><br>
-<h5>List exams the user already created</h5>
 <b-container>
   <b-row class="py-5">
     <b-col>
