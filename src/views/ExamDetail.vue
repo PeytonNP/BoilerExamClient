@@ -115,7 +115,11 @@ export default {
       this.form.ExamQuestions.splice(index, 1)
     },
     saveForm () {
-      client.put(`/Exams/${this.form.Id}`, this.form)
+      const data = {
+        ...this.form,
+        'Time': moment(this.form.Time).format()
+      }
+      client.put(`/Exams/${this.form.Id}`, data)
     },
   },
   computed: {
