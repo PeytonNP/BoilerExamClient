@@ -2,32 +2,29 @@
   <div class="library container">
     <br>
     <h2>Question Catalog
-      <b-dropdown right text="Course" variant="custom-orange">
-        <b-dropdown-item>All Courses</b-dropdown-item>
-        <b-dropdown-divider></b-dropdown-divider>
-        <b-dropdown-item>MA 16100</b-dropdown-item>
-        <b-dropdown-item>MA 26500</b-dropdown-item>
-        <b-dropdown-item>Other Courses</b-dropdown-item>
-      </b-dropdown>
-    </h2>
-    <p>Select multiple courses: https://vue-multiselect.js.org/</p>
+      <multiselect v-model="value" :options="courseList" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="Select Course(s)"
+      label="name" track-by="name" :preselect-first="true">
+      <template slot="" slot-scope=""><span class="multiselect__single">Filtering by Courses</span></template>
+    </multiselect>
 
-    <div class="">
-      <br>
-      <b-button-group size="">
-        <b-button variant="custom-lightblue">Create New Question</b-button>
-        <b-button variant="custom-lightblue">Create New Exam</b-button>
-        <b-button variant="custom-lightblue">View Exam Cart</b-button>
-      </b-button-group>
-      <br><br>
-    </div>
+  </h2>
 
-    <div class="">
-      <table class="table table-bordered" style="width:100%">
-        <tbody>
-          <tr v-for="question in questions">
-            <td><button class="btn" v-b-modal.actionModal><i class="fas fa-ellipsis-v"></i></button></td>
-            <td><p v-text="question.Tags.map(a => a.Title).join('|')" /></td>
+  <div class="">
+    <br>
+    <b-button-group size="">
+      <b-button variant="custom-lightblue">Create New Question</b-button>
+      <b-button variant="custom-lightblue">Create New Exam</b-button>
+      <b-button variant="custom-lightblue">View Exam Cart</b-button>
+    </b-button-group>
+    <br><br>
+  </div>
+
+  <div class="">
+    <table class="table table-bordered" style="width:100%">
+      <tbody>
+        <tr v-for="question in questions">
+          <td><button class="btn" v-b-modal.actionModal><i class="fas fa-ellipsis-v"></i></button></td>
+          <td><p v-text="question.Tags.map(a => a.Title).join('|')" /></td>
             <td><p v-text="question.Content" /></td>
             <td><button class="btn" v-b-modal.focusModal><i class="fas fa-eye" @click=""></i></button></td>
           </tr>
@@ -65,16 +62,25 @@
 
 <script>
 import axios from '@/utils/client'
+import Multiselect from 'vue-multiselect'
 export default {
   name: 'Library',
   data () {
     return {
       currentPage: 1,
       questions: [],
-      totalNum: 10
+      totalNum: 10,
+      value: [],
+      courseList: [
+        { name: 'MA 265' },
+        { name: 'Test' },
+        { name: 'Test1' },
+        { name: 'Linear' }
+      ]
     }
   },
   components: {
+    Multiselect
   },
   mounted () {
     const page = this.$route.query.page || 1
