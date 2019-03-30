@@ -95,6 +95,10 @@
       <b-col
         md="6">
         <question-preview v-if="form" :value="form" />
+        <div v-if="form && form.Parent">
+          This question was cloned from <router-link v-text="form.Parent.Id" :to="{name: 'question', params: {questionID: form.ParentId}}"/>:
+          <question-preview :value="form.Parent" />
+        </div>
       </b-col>
     </b-row>
   </b-container>

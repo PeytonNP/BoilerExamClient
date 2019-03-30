@@ -101,8 +101,10 @@ export default {
     clone (originalQuestion) {
       let data = {
         ...originalQuestion,
-        'Tags': originalQuestion.Tags.map(t => t.Id)
+        'Tags': originalQuestion.Tags.map(t => t.Id),
+        'ParentId': originalQuestion.Id
       }
+      delete data.Id
       return axios.post('/questions', data)
         .then(res => {
           this.$router.push({name: 'question', params: { questionID: res.data.Id } })
