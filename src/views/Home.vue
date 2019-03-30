@@ -37,9 +37,7 @@
         </b-card>
       </b-card-group>
     </b-container>
-
   </div>
-
 </div>
 </template>
 

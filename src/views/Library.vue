@@ -1,30 +1,26 @@
 <template>
   <div class="library container">
     <br>
-    <h2>Question Catalog
-      <multiselect v-model="value" :options="courseList" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="Select Course(s)"
-      label="name" track-by="name" :preselect-first="true">
-      <template slot="" slot-scope=""><span class="multiselect__single">Filtering by Courses</span></template>
-    </multiselect>
-
-  </h2>
-
-  <div class="">
-    <br>
+    <h2>Question Catalog</h2>
+    <tag-selection
+      id="form-question-tags"
+      v-model="filters.tags"/>
+  <div class="my-3">
     <b-button-group size="">
       <b-button variant="custom-lightblue">Create New Question</b-button>
       <b-button variant="custom-lightblue">Create New Exam</b-button>
       <b-button variant="custom-lightblue">View Exam Cart</b-button>
     </b-button-group>
-    <br><br>
   </div>
 
   <div class="">
     <table class="table table-bordered" style="width:100%">
       <tbody>
-        <tr v-for="question in questions">
+        <tr v-for="question in questions" :key="question.Id">
           <td><button class="btn" v-b-modal.actionModal><i class="fas fa-ellipsis-v"></i></button></td>
-          <td><p v-text="question.Tags.map(a => a.Title).join('|')" /></td>
+          <td>
+            <span v-for="tag in question.Tags" class="badge mx-1" :class="filters.tags.find(a => a.Id === tag.Id) ? 'badge-primary' : 'badge-secondary'" v-text="tag.Title" />
+          </td>
             <td><p v-text="question.Content" /></td>
             <td>
               <router-link :to="{name: 'question', params: {'questionID': question.Id}}" class="btn" >
@@ -63,7 +59,7 @@
 
 <script>
 import axios from '@/utils/client'
-import Multiselect from 'vue-multiselect'
+import TagSelection from '../components/TagSelection'
 export default {
   name: 'Library',
   data () {
@@ -72,16 +68,13 @@ export default {
       questions: [],
       totalNum: 10,
       value: [],
-      courseList: [
-        { name: 'MA 265' },
-        { name: 'Test' },
-        { name: 'Test1' },
-        { name: 'Linear' }
-      ]
+      filters: {
+        tags: []
+      }
     }
   },
   components: {
-    Multiselect
+    TagSelection,
   },
   mounted () {
     const page = this.$route.query.page || 1
@@ -92,8 +85,14 @@ export default {
   },
   methods: {
     toPage (page) {
-      return axios.get('/Questions', {
-        params: { page: page }
+      if (page === undefined) page = this.currentPage
+      const params = new URLSearchParams()
+      params.append('page', page)
+      if (this.filters.tags && this.filters.tags.length > 0) {
+        params.append('tags', this.filters.tags.map(tag => tag.Id).join(','))
+      }
+      return axios.get('/questions', {
+        params: params
       })
         .then(res => {
           this.questions = res.data.data
@@ -111,6 +110,9 @@ export default {
         .then(() => {
           this.$router.replace({ query: { page: page } })
         })
+    },
+    'filters.tags' () {
+      this.toPage()
     }
   }
 }
