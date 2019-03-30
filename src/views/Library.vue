@@ -17,7 +17,7 @@
     <table class="table table-bordered" style="width:100%">
       <tbody>
         <tr v-for="question in questions" :key="question.Id">
-          <td><button class="btn" v-b-modal.actionModal><i class="fas fa-ellipsis-v"></i></button></td>
+          <td><button class="btn" @click="currentPreview = question"><i class="fas fa-ellipsis-v"></i></button></td>
           <td>
             <span v-for="tag in question.Tags" class="badge mx-1" :class="filters.tags.find(a => a.Id === tag.Id) ? 'badge-primary' : 'badge-secondary'" v-text="tag.Title" />
           </td>
@@ -37,20 +37,17 @@
 
     <div class="inner">
 
-      <b-modal id="actionModal" size="" title="Question ID">
-        Viewing more info about the problem
-        <p>Describe a list of actions the user can take</p>
-        <p>Select one of the following actions</p>
-        <b-list-group>
-          <b-list-group-item href="#"><i class="fas fa-copy"></i>
-          Clone - Copy this problem to my problems</b-list-group-item>
-          <b-list-group-item href="#"><i class="fas fa-shopping-cart"></i>
-          Cart - Add this problem to my exam cart</b-list-group-item>
-          <b-list-group-item href="#">
-          Other action</b-list-group-item>
-          <b-list-group-item href="#" disabled><i class="fas fa-user-edit"></i>
-          Edit - Cannot edit another user's problem</b-list-group-item>
-        </b-list-group>
+      <b-modal id="actionModal" size="" title="Question ID" :visible="currentPreview !== null" @hidden="currentPreview=null">
+        <question-preview v-if="currentPreview" :value="currentPreview"></question-preview>
+        <template slot="modal-footer" v-if="currentPreview">
+          <b-button variant="secondary" @click="clone(currentPreview)"><i class="fas fa-copy mr-1"/>Clone</b-button>
+          <b-button variant="success"><i class="fas fa-shopping-cart mr-1"/>Add to Cart</b-button>
+          <router-link
+            :to="{name: 'question', params: {'questionID': currentPreview.Id}}"
+            class="btn btn-primary">
+            <i class="fas fa-edit mr-1"/>Edit
+          </router-link>
+        </template>
       </b-modal>
     </div>
 
@@ -60,6 +57,7 @@
 <script>
 import axios from '@/utils/client'
 import TagSelection from '../components/TagSelection'
+import QuestionPreview from '../components/QuestionPreview'
 export default {
   name: 'Library',
   data () {
@@ -67,14 +65,15 @@ export default {
       currentPage: 1,
       questions: [],
       totalNum: 10,
-      value: [],
       filters: {
         tags: []
-      }
+      },
+      currentPreview: null,
     }
   },
   components: {
     TagSelection,
+    QuestionPreview,
   },
   mounted () {
     const page = this.$route.query.page || 1
@@ -97,6 +96,16 @@ export default {
         .then(res => {
           this.questions = res.data.data
           this.totalNum = res.data.totalEntries
+        })
+    },
+    clone (originalQuestion) {
+      let data = {
+        ...originalQuestion,
+        'Tags': originalQuestion.Tags.map(t => t.Id)
+      }
+      return axios.post('/questions', data)
+        .then(res => {
+          this.$router.push({name: 'question', params: { questionID: res.data.Id } })
         })
     }
   },
