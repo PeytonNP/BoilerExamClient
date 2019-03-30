@@ -8,7 +8,7 @@
                         label-for="form-question-content"
                         description="The LaTeX string of the question">
             <b-form-textarea id="form-question-content"
-                             v-model="form.content"
+                             v-model="form.Content"
                              :disabled="freezed"
                              :rows="3"
                              :max-rows="6">
@@ -16,46 +16,46 @@
           </b-form-group>
           <b-form-group id="form-options-group"
                         label="Options:">
-            <b-list-group v-if="form.options && form.options.length > 0">
-              <b-list-group-item v-for="(option, index) in form.options" :key="index">
+            <b-list-group v-if="form.Options && form.Options.length > 0">
+              <b-list-group-item v-for="(option, index) in form.Options" :key="index">
                 <b-input-group :prepend="String.fromCharCode(65 + index)" >
                   <b-form-input type="text"
                                 v-if="typeof option === 'string'"
                                 :disabled="freezed"
-                                v-model="form.options[index]"/>
+                                v-model="form.Options[index]"/>
                   <b-input-group-append>
-                    <b-btn variant="danger" @click="form.options.splice(index, 1)">
+                    <b-btn variant="danger" @click="form.Options.splice(index, 1)">
                       <i class="fas fa-minus"></i>
                     </b-btn>
                   </b-input-group-append>
                 </b-input-group>
               </b-list-group-item>
             </b-list-group>
-            <b-btn variant="primary" class="float-right my-2" @click="form.options.push('')"><i class="fas fa-plus mr-2"></i>Add</b-btn>
+            <b-btn variant="primary" class="float-right my-2" @click="form.Options.push('')"><i class="fas fa-plus mr-2"></i>Add</b-btn>
           </b-form-group>
           <b-form-group id="form-combinations-group"
                         label="Combinations:">
-            <b-list-group v-if="form.combinations && form.combinations.length > 0">
-              <b-list-group-item v-for="(combination, i) in form.combinations" :key="i">
+            <b-list-group v-if="form.Combinations && form.Combinations.length > 0">
+              <b-list-group-item v-for="(combination, i) in form.Combinations" :key="i">
                 <b-nav fill pills>
                   <b-nav-item
-                    v-for="(option, index) in form.options"
+                    v-for="(option, index) in form.Options"
                     :key="index"
                     :active="combinationOptionActive(combination, index)"
                     @click="toggleCombination(combination, index)"
                   >
                     {{String.fromCharCode(index + 65)}}
                   </b-nav-item>
-                  <b-btn variant="danger" @click="form.combinations.splice(index, 1)">
+                  <b-btn variant="danger" @click="form.Combinations.splice(index, 1)">
                     <i class="fas fa-minus"></i>
                   </b-btn>
                 </b-nav>
               </b-list-group-item>
             </b-list-group>
             <b-btn-group class="float-right my-2">
-              <b-btn variant="success"  @click="toggleMode(true)" v-if="form.combinations === null"><i class="fas fa-plus-square mr-2"></i>Enable</b-btn>
+              <b-btn variant="success"  @click="toggleMode(true)" v-if="form.Combinations === null"><i class="fas fa-plus-square mr-2"></i>Enable</b-btn>
               <template v-else>
-                <b-btn variant="primary" @click="form.combinations.push([])"><i class="fas fa-plus mr-2"></i>Add</b-btn>
+                <b-btn variant="primary" @click="form.Combinations.push([])"><i class="fas fa-plus mr-2"></i>Add</b-btn>
                 <b-btn variant="danger" @click="toggleMode(false)"><i class="fas fa-ban mr-2"></i>Disable</b-btn>
               </template>
             </b-btn-group>
@@ -68,7 +68,7 @@
                            :options="answerSelections"
                            value-field="index"
                            text-field="text"
-                           v-model="form.answer"/>
+                           v-model="form.Answer"/>
           </b-form-group>
           <b-form-group id="form-question-tags-group"
                         label="Tags:"
@@ -76,7 +76,7 @@
                         description="The Tags for this question">
             <tag-selection
               id="form-question-tags"
-              v-model="form.tags"/>
+              v-model="form.Tags"/>
           </b-form-group>
           <b-button-group>
             <b-button
@@ -121,7 +121,7 @@ export default {
   methods: {
     onSave () {
       const data = Object.assign({}, this.form)
-      data.tags = data.tags.map(tag => tag.id)
+      data.Tags = data.Tags.map(tag => tag.id)
       client.put('/questions/' + this.questionID, data)
     },
     onDelete () {
@@ -138,10 +138,10 @@ export default {
     toggleMode (mode) {
       this.form.answer = 0
       if (mode) {
-        this.form.combinations = this.modeBuffer || []
+        this.form.Combinations = this.modeBuffer || []
       } else {
-        this.modeBuffer = this.form.combinations
-        this.form.combinations = null
+        this.modeBuffer = this.form.Combinations
+        this.form.Combinations = null
       }
     },
     toggleCombination (combination, index) {
@@ -150,17 +150,18 @@ export default {
   },
   computed: {
     freezed () {
-      return this.form.status === Status.approved
+      return false
+      // return this.form.Status === Status.approved
     },
     answerSelections () {
-      if (this.form.combinations === null) {
-        return this.form.options.map((option, index) => ({
+      if (this.form.Combinations === null) {
+        return this.form.Options.map((option, index) => ({
           text: IndexToLetter(index) + '. ' + option,
           index: index,
           type: 'options'
         }))
       } else {
-        return this.form.combinations.map((combination, index) => {
+        return this.form.Combinations.map((combination, index) => {
           const selection = {
             index: index,
             type: 'combinations'

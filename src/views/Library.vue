@@ -26,7 +26,11 @@
           <td><button class="btn" v-b-modal.actionModal><i class="fas fa-ellipsis-v"></i></button></td>
           <td><p v-text="question.Tags.map(a => a.Title).join('|')" /></td>
             <td><p v-text="question.Content" /></td>
-            <td><button class="btn" v-b-modal.focusModal><i class="fas fa-eye" @click=""></i></button></td>
+            <td>
+              <router-link :to="{name: 'question', params: {'questionID': question.Id}}" class="btn" >
+                <i class="fas fa-eye"></i>
+              </router-link>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -36,9 +40,6 @@
     </b-pagination>
 
     <div class="inner">
-      <b-modal id="focusModal" size="lg" title="Question ID">
-        <p>Author Info, graphs, course, tags, state, used on exams</p>
-      </b-modal>
 
       <b-modal id="actionModal" size="" title="Question ID">
         Viewing more info about the problem

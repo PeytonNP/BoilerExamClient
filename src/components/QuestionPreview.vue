@@ -1,13 +1,13 @@
 <template>
   <div>
-    <latex markdown :value="value.content" />
-    <ol :type="value.combinations ? 'I' : 'A'">
-      <li v-for="option in value.options" :key="option">
+    <latex markdown :value="value.Content" />
+    <ol :type="value.Combinations ? 'I' : 'A'">
+      <li v-for="option in value.Options" :key="option">
         <latex :value="option" />
       </li>
     </ol>
     <ol type="A">
-      <li v-for="(combination, index) in value.combinations" :key="index">
+      <li v-for="(combination, index) in value.Combinations" :key="index">
         {{formatCombination(combination)}}
       </li>
     </ol>

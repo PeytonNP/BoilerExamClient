@@ -4,8 +4,8 @@
     @input="input"
     :options="options"
     :loading="loading"
-    label="title"
-    trackBy="id"
+    label="Title"
+    trackBy="Id"
     multiple
     searchable
     @search-change="searchTags"/>
