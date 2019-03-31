@@ -14,6 +14,32 @@
                              :max-rows="6">
             </b-form-textarea>
           </b-form-group>
+          <b-card no-body>
+            <b-card-body>
+              <b-card-title>Attachments</b-card-title>
+              <b-form-file
+                v-model="selectedFile"
+                placeholder="Choose a file..."
+                drop-placeholder="Drop file here..."
+              ></b-form-file>
+              <b-button class="my-2 float-right" variant="primary" :disabled="selectedFile == null" @click="uploadFile">
+                <i class="fas fa-file-upload mr-1"/>
+                Upload
+              </b-button>
+            </b-card-body>
+            <b-list-group flush>
+              <b-list-group-item
+                draggable="true"
+                @dragstart="fileDrag($event, file)"
+                v-for="file in form.Attachments"
+                :key="file.Id">
+                {{file.FileName}}
+                <b-button class="float-right" size="sm" variant="outline-danger" @click="deleteFile(file)">
+                  <i class="fas fa-trash"></i>
+                </b-button>
+              </b-list-group-item>
+            </b-list-group>
+          </b-card>
           <b-form-group id="form-options-group"
                         label="Options:">
             <b-list-group v-if="form.Options && form.Options.length > 0">
@@ -92,8 +118,7 @@
           </b-button-group>
         </b-form>
       </b-col>
-      <b-col
-        md="6">
+      <b-col md="6">
         <question-preview v-if="form" :value="form" />
         <div v-if="form && form.Parent">
           This question was cloned from <router-link v-text="form.Parent.Id" :to="{name: 'question', params: {questionID: form.ParentId}}"/>:
@@ -114,6 +139,7 @@ export default {
   name: 'Question',
   data: () => ({
     form: null,
+    selectedFile: null,
   }),
   mounted () {
     client.get('/questions/' + this.questionID)
@@ -150,6 +176,34 @@ export default {
     },
     toggleCombination (combination, index) {
       if (this.combinationOptionActive(combination, index)) { combination.splice(combination.indexOf(index), 1) } else { combination.push(index) }
+    },
+    uploadFile () {
+      if (!this.selectedFile) {
+        return
+      }
+      const formData = new FormData()
+      formData.append('file', this.selectedFile)
+      client.post(`/questions/${this.questionID}/attachments`, formData, {
+        headers: {
+          'content-type': 'multipart/form-data'
+        }
+      })
+        .then(res => {
+          const metadata = res.data
+          this.form.Attachments.push(metadata)
+          this.selectedFile = null
+        })
+    },
+    deleteFile (file) {
+      client.delete(`/files/${file.Id}`)
+        .then(res => {
+          const index = this.form.Attachments.indexOf(file)
+          this.form.Attachments.splice(index, 1)
+        })
+    },
+    fileDrag (event, file) {
+      const url = process.env.BASE_URL + 'api/files/' + file.Id
+      event.dataTransfer.setData('text', `![${file.FileName}](${url})`)
     }
   },
   computed: {
