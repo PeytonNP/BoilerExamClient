@@ -7,9 +7,7 @@
       v-model="filters.tags"/>
   <div class="my-3">
     <b-button-group size="">
-      <b-button variant="custom-lightblue">Create New Question</b-button>
-      <b-button variant="custom-lightblue">Create New Exam</b-button>
-      <b-button variant="custom-lightblue">View Exam Cart</b-button>
+      <b-button variant="custom-lightblue" @click="createNew">Create New Question</b-button>
     </b-button-group>
   </div>
 
@@ -19,11 +17,11 @@
         <tr v-for="question in questions" :key="question.Id">
           <td><button class="btn" @click="currentPreview = question"><i class="fas fa-ellipsis-v"></i></button></td>
           <td>
-            <span v-for="tag in question.Tags" class="badge mx-1" :class="filters.tags.find(a => a.Id === tag.Id) ? 'badge-primary' : 'badge-secondary'" v-text="tag.Title" />
+            <span v-for="tag in question.Tags" class="badge mx-1" :class="filters.tags.some(a => a.Id === tag.Id) ? 'badge-primary' : 'badge-secondary'" v-text="tag.Title" />
           </td>
             <td><p v-text="question.Content" /></td>
             <td>
-              <router-link :to="{name: 'question', params: {'questionID': question.Id}}" class="btn" >
+              <router-link :to="{name: 'question', params: {'questionID': question.Id}}" class="btn">
                 <i class="fas fa-eye"></i>
               </router-link>
             </td>
@@ -31,17 +29,19 @@
         </tbody>
       </table>
     </div>
-    <b-pagination :total-rows="totalNum" :per-page="20" v-model="currentPage">
-
-    </b-pagination>
+    <b-pagination :total-rows="totalNum" :per-page="20" v-model="currentPage" />
 
     <div class="inner">
 
       <b-modal id="actionModal" size="" title="Question ID" :visible="currentPreview !== null" @hidden="currentPreview=null">
         <question-preview v-if="currentPreview" :value="currentPreview"></question-preview>
         <template slot="modal-footer" v-if="currentPreview">
+          <b-button
+            variant="success"
+            @click="addToCart(currentPreview)"
+            :disabled="editingExam === null"
+          ><i class="fas fa-shopping-cart mr-1"/>Add to Cart</b-button>
           <b-button variant="secondary" @click="clone(currentPreview)"><i class="fas fa-copy mr-1"/>Clone</b-button>
-          <b-button variant="success"><i class="fas fa-shopping-cart mr-1"/>Add to Cart</b-button>
           <router-link
             :to="{name: 'question', params: {'questionID': currentPreview.Id}}"
             class="btn btn-primary">
@@ -58,6 +58,7 @@
 import axios from '@/utils/client'
 import TagSelection from '../components/TagSelection'
 import QuestionPreview from '../components/QuestionPreview'
+import { mapState } from 'vuex'
 export default {
   name: 'Library',
   data () {
@@ -107,8 +108,22 @@ export default {
       delete data.Id
       return axios.post('/questions', data)
         .then(res => {
-          this.$router.push({name: 'question', params: { questionID: res.data.Id } })
+          this.$router.push({ name: 'question', params: { questionID: res.data.Id } })
         })
+    },
+    createNew () {
+      return axios.post('/questions', {
+        Options: ['Sample Option'],
+        Answer: 0
+      })
+        .then(res => {
+          this.$router.push({ name: 'question', params: { questionID: res.data.Id } })
+        })
+    },
+    addToCart (question) {
+      this.$store.commit('addExamQuestion', { element: question, newIndex: 0 })
+      this.currentPreview = null
+      this.$store.dispatch('saveEditingExam')
     }
   },
   watch: {
@@ -123,8 +138,10 @@ export default {
         })
     },
     'filters.tags' () {
+      this.currentPage = 0
       this.toPage()
     }
-  }
+  },
+  computed: mapState(['editingExam'])
 }
 </script>

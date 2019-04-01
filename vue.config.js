@@ -11,4 +11,5 @@ module.exports = {
     ? '/itap/boilerexam/'
     : '/',
   integrity: true,
+  parallel: false,
 }
