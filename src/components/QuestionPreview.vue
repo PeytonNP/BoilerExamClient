@@ -24,7 +24,7 @@ export default {
   props: ['value'],
   methods: {
     formatCombination (combination) {
-      const total = this.value.options.length
+      const total = this.value.Options.length
       if (combination.length >= total) {
         return 'All of them'
       } else if (combination.length === 0) {

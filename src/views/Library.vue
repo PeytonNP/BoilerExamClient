@@ -138,7 +138,7 @@ export default {
         })
     },
     'filters.tags' () {
-      this.currentPage = 0
+      this.currentPage = 1
       this.toPage()
     }
   },
