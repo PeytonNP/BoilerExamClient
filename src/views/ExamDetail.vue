@@ -172,9 +172,9 @@ function getTagMap (examQuestions) {
   const tagMap = new Map()
   examQuestions.forEach(examQuestion => {
     examQuestion.Question.Tags.forEach(tag => {
-      const key = tag.title
+      const key = tag.Title
       const originalPoints = tagMap.has(key) ? tagMap.get(key) : 0
-      tagMap.set(key, originalPoints + examQuestion.points)
+      tagMap.set(key, originalPoints + examQuestion.Points)
     })
   })
   return tagMap
