@@ -1,13 +1,13 @@
 <template>
   <b-list-group-item
-    :to="{ name: 'question', params: { questionID: question.id }}">
-    <latex inline class="mb-1" :value="question.content"/>
+    :to="{ name: 'question', params: { questionID: question.Id }}">
+    <latex inline class="mb-1" :value="question.Content"/>
     <div class="library-badge-container">
       <b-badge
-        v-for="tag in question.tags"
-        :key="tag.id"
+        v-for="tag in question.Tags"
+        :key="tag.Id"
         :variant="tags && tags.some(t => t.id === tag.id) ? 'primary' : 'secondary'">
-        {{ tag.title }}
+        {{ tag.Title }}
       </b-badge>
       <slot name="action-btn"></slot>
     </div>

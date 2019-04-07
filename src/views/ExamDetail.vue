@@ -4,7 +4,6 @@
       <b-col>
         <div class="pb-5">
           <exam-basic-info v-model="form" />
-          <b-button variant="primary" @click="saveForm">Save</b-button>
         </div>
         <b-list-group>
           <b-list-group-item v-if="form.ExamQuestions.length === 0">
@@ -13,14 +12,14 @@
           <draggable v-model="form.ExamQuestions" :options="{ animation: 150 }" >
             <question-list-item
               v-for="(examQuestion, index) in form.ExamQuestions"
-              :question="examQuestion.question"
-              :key="examQuestion.question.id">
+              :question="examQuestion.Question"
+              :key="examQuestion.Question.Id">
               <div slot="actions" @click.stop.prevent class="mt-3">
                 <b-form-group horizontal
                               class="d-inline my-0"
                               label-size="sm"
                               label="Points">
-                  <b-input type="number" v-model.number="examQuestion.points" size="sm"></b-input>
+                  <b-input type="number" v-model.number="examQuestion.Points" size="sm"></b-input>
                 </b-form-group>
                 <b-btn
                   size="sm"
@@ -31,14 +30,18 @@
             </question-list-item>
           </draggable>
         </b-list-group>
-        <b-btn class="float-right my-3" variant="primary" @click="addQuestions">Add</b-btn>
+        <b-button-group class="float-right my-3">
+          <b-button variant="info" @click="addQuestions">Add Questions</b-button>
+          <b-button variant="primary" @click="saveForm">Save</b-button>
+          <b-button variant="danger" @click="deleteExam">Delete</b-button>
+        </b-button-group>
       </b-col>
       <b-col>
         <b-card no-body header="Statistics" class="my-3">
           <canvas class="card-img-top" ref="stat-chart"/>
           <b-list-group flush>
             <b-list-group-item>
-              Total Score: {{form.ExamQuestions.map(examQuestion => examQuestion.points).reduce((x, y) => x + y, 0)}}
+              Total Score: {{form.ExamQuestions.map(examQuestion => examQuestion.Points).reduce((x, y) => x + y, 0)}}
             </b-list-group-item>
           </b-list-group>
         </b-card>
@@ -92,6 +95,7 @@ export default {
       this.form.Title = data.Title
       this.form.Description = data.Description
       this.form.Time = moment(data.Time).toDate()
+      this.form.ExamQuestions = data.ExamQuestions
     }
 
     const tagMap = getTagMap(this.form.ExamQuestions)
@@ -115,8 +119,23 @@ export default {
       this.form.ExamQuestions.splice(index, 1)
     },
     saveForm () {
-      client.put(`/Exams/${this.form.Id}`, this.form)
+      const data = {
+        ...this.form,
+        'Time': moment(this.form.Time).format()
+      }
+      client.put(`/Exams/${this.form.Id}`, data)
     },
+    deleteExam () {
+      let a = confirm("Are you sure?")
+      if (!a) {
+        return
+      }
+      if (this.editingExam.Id === this.form.Id) {
+        this.$store.commit('editExam', null)
+      }
+      client.delete(`/Exams/${this.form.Id}`)
+      this.$router.push({name: 'exams'})
+    }
   },
   computed: {
     examID () {
@@ -152,10 +171,10 @@ function randomColor () {
 function getTagMap (examQuestions) {
   const tagMap = new Map()
   examQuestions.forEach(examQuestion => {
-    examQuestion.question.tags.forEach(tag => {
-      const key = tag.title
+    examQuestion.Question.Tags.forEach(tag => {
+      const key = tag.Title
       const originalPoints = tagMap.has(key) ? tagMap.get(key) : 0
-      tagMap.set(key, originalPoints + examQuestion.points)
+      tagMap.set(key, originalPoints + examQuestion.Points)
     })
   })
   return tagMap

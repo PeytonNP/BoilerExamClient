@@ -1,59 +1,53 @@
 <template>
   <div class="library container">
     <br>
-    <h2>Question Catalog
-      <multiselect v-model="value" :options="courseList" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="Select Course(s)"
-      label="name" track-by="name" :preselect-first="true">
-      <template slot="" slot-scope=""><span class="multiselect__single">Filtering by Courses</span></template>
-    </multiselect>
-
-  </h2>
-
-  <div class="">
-    <br>
+    <h2>Question Catalog</h2>
+    <tag-selection
+      id="form-question-tags"
+      v-model="filters.tags"/>
+  <div class="my-3">
     <b-button-group size="">
-      <b-button variant="custom-lightblue">Create New Question</b-button>
-      <b-button variant="custom-lightblue">Create New Exam</b-button>
-      <b-button variant="custom-lightblue">View Exam Cart</b-button>
+      <b-button variant="custom-lightblue" @click="createNew">Create New Question</b-button>
     </b-button-group>
-    <br><br>
   </div>
 
   <div class="">
     <table class="table table-bordered" style="width:100%">
       <tbody>
-        <tr v-for="question in questions">
-          <td><button class="btn" v-b-modal.actionModal><i class="fas fa-ellipsis-v"></i></button></td>
-          <td><p v-text="question.Tags.map(a => a.Title).join('|')" /></td>
+        <tr v-for="question in questions" :key="question.Id">
+          <td><button class="btn" @click="currentPreview = question"><i class="fas fa-ellipsis-v"></i></button></td>
+          <td>
+            <span v-for="tag in question.Tags" class="badge mx-1" :class="filters.tags.some(a => a.Id === tag.Id) ? 'badge-primary' : 'badge-secondary'" v-text="tag.Title" />
+          </td>
             <td><p v-text="question.Content" /></td>
-            <td><button class="btn" v-b-modal.focusModal><i class="fas fa-eye" @click=""></i></button></td>
+            <td>
+              <router-link :to="{name: 'question', params: {'questionID': question.Id}}" class="btn">
+                <i class="fas fa-eye"></i>
+              </router-link>
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
-    <b-pagination :total-rows="totalNum" :per-page="20" v-model="currentPage">
-
-    </b-pagination>
+    <b-pagination :total-rows="totalNum" :per-page="20" v-model="currentPage" />
 
     <div class="inner">
-      <b-modal id="focusModal" size="lg" title="Question ID">
-        <p>Author Info, graphs, course, tags, state, used on exams</p>
-      </b-modal>
 
-      <b-modal id="actionModal" size="" title="Question ID">
-        Viewing more info about the problem
-        <p>Describe a list of actions the user can take</p>
-        <p>Select one of the following actions</p>
-        <b-list-group>
-          <b-list-group-item href="#"><i class="fas fa-copy"></i>
-          Clone - Copy this problem to my problems</b-list-group-item>
-          <b-list-group-item href="#"><i class="fas fa-shopping-cart"></i>
-          Cart - Add this problem to my exam cart</b-list-group-item>
-          <b-list-group-item href="#">
-          Other action</b-list-group-item>
-          <b-list-group-item href="#" disabled><i class="fas fa-user-edit"></i>
-          Edit - Cannot edit another user's problem</b-list-group-item>
-        </b-list-group>
+      <b-modal id="actionModal" size="" title="Question ID" :visible="currentPreview !== null" @hidden="currentPreview=null">
+        <question-preview v-if="currentPreview" :value="currentPreview"></question-preview>
+        <template slot="modal-footer" v-if="currentPreview">
+          <b-button
+            variant="success"
+            @click="addToCart(currentPreview)"
+            :disabled="editingExam === null"
+          ><i class="fas fa-shopping-cart mr-1"/>Add to Cart</b-button>
+          <b-button variant="secondary" @click="clone(currentPreview)"><i class="fas fa-copy mr-1"/>Clone</b-button>
+          <router-link
+            :to="{name: 'question', params: {'questionID': currentPreview.Id}}"
+            class="btn btn-primary">
+            <i class="fas fa-edit mr-1"/>Edit
+          </router-link>
+        </template>
       </b-modal>
     </div>
 
@@ -62,7 +56,9 @@
 
 <script>
 import axios from '@/utils/client'
-import Multiselect from 'vue-multiselect'
+import TagSelection from '../components/TagSelection'
+import QuestionPreview from '../components/QuestionPreview'
+import { mapState } from 'vuex'
 export default {
   name: 'Library',
   data () {
@@ -70,17 +66,15 @@ export default {
       currentPage: 1,
       questions: [],
       totalNum: 10,
-      value: [],
-      courseList: [
-        { name: 'MA 265' },
-        { name: 'Test' },
-        { name: 'Test1' },
-        { name: 'Linear' }
-      ]
+      filters: {
+        tags: []
+      },
+      currentPreview: null,
     }
   },
   components: {
-    Multiselect
+    TagSelection,
+    QuestionPreview,
   },
   mounted () {
     const page = this.$route.query.page || 1
@@ -91,13 +85,45 @@ export default {
   },
   methods: {
     toPage (page) {
-      return axios.get('/Questions', {
-        params: { page: page }
+      if (page === undefined) page = this.currentPage
+      const params = new URLSearchParams()
+      params.append('page', page)
+      if (this.filters.tags && this.filters.tags.length > 0) {
+        params.append('tags', this.filters.tags.map(tag => tag.Id).join(','))
+      }
+      return axios.get('/questions', {
+        params: params
       })
         .then(res => {
           this.questions = res.data.data
           this.totalNum = res.data.totalEntries
         })
+    },
+    clone (originalQuestion) {
+      let data = {
+        ...originalQuestion,
+        'Tags': originalQuestion.Tags.map(t => t.Id),
+        'ParentId': originalQuestion.Id
+      }
+      delete data.Id
+      return axios.post('/questions', data)
+        .then(res => {
+          this.$router.push({ name: 'question', params: { questionID: res.data.Id } })
+        })
+    },
+    createNew () {
+      return axios.post('/questions', {
+        Options: ['Sample Option'],
+        Answer: 0
+      })
+        .then(res => {
+          this.$router.push({ name: 'question', params: { questionID: res.data.Id } })
+        })
+    },
+    addToCart (question) {
+      this.$store.commit('addExamQuestion', { element: question, newIndex: 0 })
+      this.currentPreview = null
+      this.$store.dispatch('saveEditingExam')
     }
   },
   watch: {
@@ -110,7 +136,12 @@ export default {
         .then(() => {
           this.$router.replace({ query: { page: page } })
         })
+    },
+    'filters.tags' () {
+      this.currentPage = 1
+      this.toPage()
     }
-  }
+  },
+  computed: mapState(['editingExam'])
 }
 </script>
